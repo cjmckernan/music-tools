@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Barre Chords — Reference Cheat Sheet</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4C22 4 16 12 14 20c-2 8-1 16 2 24s8 12 16 12 13-4 16-12 4-16 2-24C48 12 42 4 32 4z' fill='%23e8a838'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='26' font-style='italic' fill='%231a0f00'%3EC%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --A: #e8a838;
+    --G: #5b9cf6;
+    --E: #a78bfa;
+    --D: #f87171;
+    --C: #34d399;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo span { font-style: italic; color: var(--A); }
+
+  .subtitle {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .nav-link {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.15s;
+    margin-top: 6px;
+    display: inline-block;
+  }
+  .nav-link:hover { color: var(--text); }
+
+  /* ── STICKY JUMP NAV ── */
+  .jump-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2.5rem;
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .jump-nav a {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .jump-nav a:hover {
+    color: var(--text);
+    border-color: var(--border);
+    background: var(--bg3);
+  }
+  .jump-nav .sep {
+    color: rgba(255,255,255,0.15);
+    font-size: 0.6rem;
+    user-select: none;
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2.5rem 4rem;
+  }
+
+  /* ── SECTION ── */
+  .section {
+    padding-top: 2.5rem;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2rem;
+    font-style: italic;
+    margin-bottom: 0.5rem;
+  }
+
+  .section-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    max-width: 50em;
+    line-height: 1.6;
+  }
+
+  /* ── CHORD GRID ── */
+  .chord-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+  }
+
+  .chord-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+  }
+
+  .chord-card-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.5rem;
+    font-style: italic;
+    margin-bottom: 0.75rem;
+  }
+
+  .chord-card-forms {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .chord-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .chord-form-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .chord-form-fret {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  /* ── PROGRESSIONS ── */
+  .prog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1rem;
+  }
+
+  .prog-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .prog-card-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+    margin-bottom: 0.25rem;
+  }
+
+  .prog-card-formula {
+    font-size: 0.7rem;
+    color: var(--A);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+
+  .prog-key-row {
+    margin-bottom: 0.5rem;
+  }
+
+  .prog-key-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.25rem;
+  }
+
+  .prog-chords {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-chord {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 0.7rem;
+  }
+
+  .prog-chord .name {
+    font-weight: 700;
+  }
+
+  .prog-chord .fret {
+    color: var(--muted);
+    font-size: 0.6rem;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1000px) {
+    .chord-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  @media (max-width: 750px) {
+    .chord-grid { grid-template-columns: repeat(2, 1fr); }
+    header { padding: 1.5rem; }
+    .jump-nav { padding: 0.75rem 1.5rem; }
+    .content { padding: 0 1.5rem 3rem; }
+  }
+  @media (max-width: 450px) {
+    .chord-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Barre <span>Chords</span></div>
+    <div class="subtitle">Static Reference Cheat Sheet</div>
+    <a href="caged-guitar-tool.html" class="nav-link">&larr; CAGED Tool</a>
+  </div>
+</header>
+
+<nav class="jump-nav">
+  <a href="#major">Major</a>
+  <span class="sep">|</span>
+  <a href="#minor">Minor</a>
+  <span class="sep">|</span>
+  <a href="#dom7">Dominant 7th</a>
+  <span class="sep">|</span>
+  <a href="#min7">Minor 7th</a>
+  <span class="sep">|</span>
+  <a href="#progressions">Progressions</a>
+</nav>
+
+<div class="content" id="content"></div>
+
+<footer>
+  <span>Barre Chord Reference</span>
+  <span>8 shapes &mdash; all 12 keys</span>
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+
+// Chromatic order starting at F (first barre chord)
+const BARRE_ORDER = ['F','F#','G','Ab','A','Bb','B','C','C#','D','Eb','E'];
+
+const DISPLAY = {
+  'C':'C','C#':'C#','D':'D','D#':'Eb','E':'E','F':'F',
+  'F#':'F#','G':'G','G#':'Ab','A':'A','A#':'Bb','B':'B'
+};
+
+function noteIdx(n) {
+  const map = {'Eb':'D#','Ab':'G#','Bb':'A#'};
+  return NOTES.indexOf(map[n] || n);
+}
+
+function fretForNote(openNote, target) {
+  return (noteIdx(target) - noteIdx(openNote) + 12) % 12;
+}
+
+function displayNote(n) { return DISPLAY[n] || n; }
+
+// ─── SHAPE DEFINITIONS ─────────────────────────────────────────
+// str: 0=high e, 5=low E. fret: relative to barre (0 = barre fret).
+// For A-rooted shapes, mute string 0 (high e side = low E physical string)
+
+const SHAPES = {
+  // ── Root on 6th string (E-based) ──
+  E_major: {
+    label: 'E-form', rootStr: 5, openNote: 'E', color: 'var(--E)',
+    muted: [], numFrets: 4,
+    fingers: [{s:0,f:0},{s:1,f:0},{s:2,f:1},{s:3,f:2},{s:4,f:2},{s:5,f:0}],
+    barreFrom: 0, barreTo: 5, barreFret: 0
+  },
+  E_minor: {
+    label: 'Em-form', rootStr: 5, openNote: 'E', color: 'var(--E)',
+    muted: [], numFrets: 4,
+    fingers: [{s:0,f:0},{s:1,f:0},{s:2,f:0},{s:3,f:2},{s:4,f:2},{s:5,f:0}],
+    barreFrom: 0, barreTo: 5, barreFret: 0
+  },
+  E_dom7: {
+    label: 'E7-form', rootStr: 5, openNote: 'E', color: 'var(--E)',
+    muted: [], numFrets: 4,
+    fingers: [{s:0,f:0},{s:1,f:0},{s:2,f:1},{s:3,f:0},{s:4,f:2},{s:5,f:0}],
+    barreFrom: 0, barreTo: 5, barreFret: 0
+  },
+  E_min7: {
+    label: 'Em7-form', rootStr: 5, openNote: 'E', color: 'var(--E)',
+    muted: [], numFrets: 4,
+    fingers: [{s:0,f:0},{s:1,f:0},{s:2,f:0},{s:3,f:0},{s:4,f:2},{s:5,f:0}],
+    barreFrom: 0, barreTo: 5, barreFret: 0
+  },
+  // ── Root on 5th string (A-based) ──
+  A_major: {
+    label: 'A-form', rootStr: 4, openNote: 'A', color: 'var(--A)',
+    muted: [0], numFrets: 4,
+    fingers: [{s:1,f:0},{s:2,f:2},{s:3,f:2},{s:4,f:0},{s:5,f:0}],
+    barreFrom: 1, barreTo: 5, barreFret: 0
+  },
+  A_minor: {
+    label: 'Am-form', rootStr: 4, openNote: 'A', color: 'var(--A)',
+    muted: [0], numFrets: 4,
+    fingers: [{s:1,f:0},{s:2,f:1},{s:3,f:2},{s:4,f:0},{s:5,f:0}],
+    barreFrom: 1, barreTo: 5, barreFret: 0
+  },
+  A_dom7: {
+    label: 'A7-form', rootStr: 4, openNote: 'A', color: 'var(--A)',
+    muted: [0], numFrets: 4,
+    fingers: [{s:1,f:2},{s:2,f:0},{s:3,f:2},{s:4,f:0},{s:5,f:0}],
+    barreFrom: 1, barreTo: 5, barreFret: 0
+  },
+  A_min7: {
+    label: 'Am7-form', rootStr: 4, openNote: 'A', color: 'var(--A)',
+    muted: [0], numFrets: 4,
+    fingers: [{s:1,f:1},{s:2,f:0},{s:3,f:2},{s:4,f:0},{s:5,f:0}],
+    barreFrom: 1, barreTo: 5, barreFret: 0
+  }
+};
+
+// ─── SVG CHORD DIAGRAM ─────────────────────────────────────────
+function renderDiagram(shape, fret) {
+  const numFrets = shape.numFrets;
+  const strSpacing = 16;
+  const fretSpacing = 22;
+  const padLeft = 24;
+  const padTop = 20;
+  const padRight = 10;
+  const padBottom = 6;
+  const w = padLeft + 5 * strSpacing + padRight;
+  const h = padTop + numFrets * fretSpacing + padBottom;
+
+  const strToX = s => padLeft + (5 - s) * strSpacing;
+  let d = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+
+  // Fret lines
+  for (let f = 0; f <= numFrets; f++) {
+    const y = padTop + f * fretSpacing;
+    const sw = f === 0 ? 3 : 1;
+    const c = f === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)';
+    d += `<line x1="${padLeft}" y1="${y}" x2="${padLeft+5*strSpacing}" y2="${y}" stroke="${c}" stroke-width="${sw}"/>`;
+  }
+  // String lines
+  for (let s = 0; s < 6; s++) {
+    const x = padLeft + s * strSpacing;
+    d += `<line x1="${x}" y1="${padTop}" x2="${x}" y2="${padTop+numFrets*fretSpacing}" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>`;
+  }
+  // Muted strings
+  shape.muted.forEach(s => {
+    d += `<text x="${strToX(s)}" y="${padTop-7}" text-anchor="middle" font-family="Space Mono,monospace" font-size="9" fill="var(--muted)">X</text>`;
+  });
+  // Barre line
+  if (shape.barreFrom !== undefined) {
+    const y = padTop + shape.barreFret * fretSpacing + fretSpacing / 2;
+    d += `<line x1="${strToX(shape.barreTo)}" y1="${y}" x2="${strToX(shape.barreFrom)}" y2="${y}" stroke="${shape.color}" stroke-width="7" stroke-linecap="round" opacity="0.45"/>`;
+  }
+  // Finger dots
+  shape.fingers.forEach(({s, f: fr}) => {
+    const x = strToX(s);
+    const y = padTop + fr * fretSpacing + fretSpacing / 2;
+    const isRoot = s === shape.rootStr;
+    const r = isRoot ? 6 : 5;
+    d += `<circle cx="${x}" cy="${y}" r="${r}" fill="${shape.color}"/>`;
+    if (isRoot) d += `<circle cx="${x}" cy="${y}" r="${r+2}" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1.5"/>`;
+  });
+  // Fret number label
+  if (fret > 0) {
+    d += `<text x="${padLeft-12}" y="${padTop+fretSpacing/2+3}" text-anchor="middle" font-family="Space Mono,monospace" font-size="9" fill="var(--muted)">${fret}</text>`;
+  }
+
+  d += '</svg>';
+  return d;
+}
+
+// ─── BUILD SECTION ──────────────────────────────────────────────
+function buildChordSection(id, title, desc, eShapeKey, aShapeKey, suffix) {
+  const eShape = SHAPES[eShapeKey];
+  const aShape = SHAPES[aShapeKey];
+
+  let html = `<section class="section" id="${id}">
+    <h2 class="section-title">${title}</h2>
+    <p class="section-desc">${desc}</p>
+    <div class="chord-grid">`;
+
+  BARRE_ORDER.forEach(note => {
+    const noteInternal = ({'Eb':'D#','Ab':'G#','Bb':'A#'})[note] || note;
+    const eFret = fretForNote(eShape.openNote, noteInternal);
+    const aFret = fretForNote(aShape.openNote, noteInternal);
+    const chordName = note + suffix;
+
+    html += `<div class="chord-card">
+      <div class="chord-card-name">${chordName}</div>
+      <div class="chord-card-forms">
+        <div class="chord-form">
+          <div class="chord-form-label" style="color:${eShape.color}">${eShape.label}</div>
+          ${renderDiagram(eShape, eFret)}
+          <div class="chord-form-fret">Fret ${eFret || 'open'}</div>
+        </div>
+        <div class="chord-form">
+          <div class="chord-form-label" style="color:${aShape.color}">${aShape.label}</div>
+          ${renderDiagram(aShape, aFret)}
+          <div class="chord-form-fret">Fret ${aFret || 'open'}</div>
+        </div>
+      </div>
+    </div>`;
+  });
+
+  html += '</div></section>';
+  return html;
+}
+
+// ─── PROGRESSIONS SECTION ───────────────────────────────────────
+function chordInKey(root, interval, quality) {
+  // interval: semitones from root
+  const rootIdx = noteIdx(root);
+  const targetNote = NOTES[(rootIdx + interval) % 12];
+  const name = displayNote(targetNote) + quality;
+  // Get E-form fret
+  const eFret = fretForNote('E', targetNote);
+  // Get A-form fret
+  const aFret = fretForNote('A', targetNote);
+  return { name, eFret, aFret };
+}
+
+const PROGRESSIONS = [
+  {
+    title: 'I — IV — V',
+    formula: 'Major: I – IV – V',
+    keys: [
+      { key: 'G', chords: [
+        chordInKey('G', 0, ''),   // I = G
+        chordInKey('G', 5, ''),   // IV = C
+        chordInKey('G', 7, ''),   // V = D
+      ]},
+      { key: 'A', chords: [
+        chordInKey('A', 0, ''),
+        chordInKey('A', 5, ''),
+        chordInKey('A', 7, ''),
+      ]},
+      { key: 'C', chords: [
+        chordInKey('C', 0, ''),
+        chordInKey('C', 5, ''),
+        chordInKey('C', 7, ''),
+      ]},
+    ]
+  },
+  {
+    title: 'I — V — vi — IV',
+    formula: 'Pop: I – V – vi – IV',
+    keys: [
+      { key: 'G', chords: [
+        chordInKey('G', 0, ''),
+        chordInKey('G', 7, ''),
+        chordInKey('G', 9, 'm'),
+        chordInKey('G', 5, ''),
+      ]},
+      { key: 'C', chords: [
+        chordInKey('C', 0, ''),
+        chordInKey('C', 7, ''),
+        chordInKey('C', 9, 'm'),
+        chordInKey('C', 5, ''),
+      ]},
+      { key: 'D', chords: [
+        chordInKey('D', 0, ''),
+        chordInKey('D', 7, ''),
+        chordInKey('D', 9, 'm'),
+        chordInKey('D', 5, ''),
+      ]},
+    ]
+  },
+  {
+    title: 'i — iv — v',
+    formula: 'Minor: i – iv – v',
+    keys: [
+      { key: 'Am', chords: [
+        chordInKey('A', 0, 'm'),
+        chordInKey('A', 5, 'm'),
+        chordInKey('A', 7, 'm'),
+      ]},
+      { key: 'Em', chords: [
+        chordInKey('E', 0, 'm'),
+        chordInKey('E', 5, 'm'),
+        chordInKey('E', 7, 'm'),
+      ]},
+      { key: 'Dm', chords: [
+        chordInKey('D', 0, 'm'),
+        chordInKey('D', 5, 'm'),
+        chordInKey('D', 7, 'm'),
+      ]},
+    ]
+  },
+  {
+    title: 'I — vi — IV — V',
+    formula: '50s: I – vi – IV – V',
+    keys: [
+      { key: 'C', chords: [
+        chordInKey('C', 0, ''),
+        chordInKey('C', 9, 'm'),
+        chordInKey('C', 5, ''),
+        chordInKey('C', 7, ''),
+      ]},
+      { key: 'G', chords: [
+        chordInKey('G', 0, ''),
+        chordInKey('G', 9, 'm'),
+        chordInKey('G', 5, ''),
+        chordInKey('G', 7, ''),
+      ]},
+    ]
+  },
+  {
+    title: 'ii — V — I',
+    formula: 'Jazz: ii – V – I',
+    keys: [
+      { key: 'C', chords: [
+        chordInKey('C', 2, 'm7'),
+        chordInKey('C', 7, '7'),
+        chordInKey('C', 0, 'maj7'),
+      ]},
+      { key: 'G', chords: [
+        chordInKey('G', 2, 'm7'),
+        chordInKey('G', 7, '7'),
+        chordInKey('G', 0, 'maj7'),
+      ]},
+      { key: 'F', chords: [
+        chordInKey('F', 2, 'm7'),
+        chordInKey('F', 7, '7'),
+        chordInKey('F', 0, 'maj7'),
+      ]},
+    ]
+  }
+];
+
+function buildProgressions() {
+  let html = `<section class="section" id="progressions">
+    <h2 class="section-title">Common Progressions</h2>
+    <p class="section-desc">Popular chord progressions with barre chord positions. E-form fret and A-form fret shown for each chord so you can practice moving between positions.</p>
+    <div class="prog-grid">`;
+
+  PROGRESSIONS.forEach(prog => {
+    html += `<div class="prog-card">
+      <div class="prog-card-title">${prog.title}</div>
+      <div class="prog-card-formula">${prog.formula}</div>`;
+
+    prog.keys.forEach(k => {
+      html += `<div class="prog-key-row">
+        <div class="prog-key-label">Key of ${k.key}</div>
+        <div class="prog-chords">`;
+      k.chords.forEach(c => {
+        html += `<div class="prog-chord"><span class="name">${c.name}</span> <span class="fret">E:${c.eFret} A:${c.aFret}</span></div>`;
+      });
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+  });
+
+  html += '</div></section>';
+  return html;
+}
+
+// ─── RENDER ALL ─────────────────────────────────────────────────
+document.getElementById('content').innerHTML =
+  buildChordSection('major', 'Major Barre Chords', 'All 12 major chords in E-form (root on 6th string) and A-form (root on 5th string). These are the two most common barre chord shapes.', 'E_major', 'A_major', '') +
+  buildChordSection('minor', 'Minor Barre Chords', 'All 12 minor chords in Em-form and Am-form. Same root positions as their major counterparts — just lift a finger.', 'E_minor', 'A_minor', 'm') +
+  buildChordSection('dom7', 'Dominant 7th Barre Chords', 'All 12 dominant 7th chords in E7-form and A7-form. Essential for blues, funk, and jazz.', 'E_dom7', 'A_dom7', '7') +
+  buildChordSection('min7', 'Minor 7th Barre Chords', 'All 12 minor 7th chords in Em7-form and Am7-form. Smooth, jazzy voicings used everywhere.', 'E_min7', 'A_min7', 'm7') +
+  buildProgressions();
+</script>
+</body>
+</html>
