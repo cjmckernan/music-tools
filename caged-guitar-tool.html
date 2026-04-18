@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CAGED — Guitar Theory Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --A: #e8a838;
+    --G: #5b9cf6;
+    --E: #a78bfa;
+    --D: #f87171;
+    --C: #34d399;
+    --A-dim: rgba(232,168,56,0.15);
+    --G-dim: rgba(91,156,246,0.15);
+    --E-dim: rgba(167,139,250,0.15);
+    --D-dim: rgba(248,113,113,0.15);
+    --C-dim: rgba(52,211,153,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo span { font-style: italic; color: var(--A); }
+
+  .subtitle {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .mode-toggle {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .mode-toggle button {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 8px 14px;
+    cursor: pointer;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .mode-toggle button.active {
+    background: var(--bg3);
+    color: var(--text);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: calc(100vh - 100px);
+  }
+
+  /* ── SIDEBAR ── */
+  aside {
+    border-right: 1px solid var(--border);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+
+  /* Key selector */
+  .key-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 5px;
+  }
+  .key-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.75rem;
+    padding: 8px 4px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+  }
+  .key-btn:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+  .key-btn.active {
+    background: var(--text);
+    color: var(--bg);
+    border-color: var(--text);
+    font-weight: 700;
+  }
+
+  /* Scale type toggle */
+  .scale-toggle { display: flex; flex-direction: column; gap: 5px; }
+  .scale-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 10px 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+  .scale-btn:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .scale-btn.active { background: var(--bg3); color: var(--text); border-color: rgba(255,255,255,0.3); }
+  .scale-btn.active::before { content: '▶ '; font-size: 0.6rem; }
+
+  /* Shape filter */
+  .shape-filter { display: flex; gap: 5px; flex-wrap: wrap; }
+  .shape-pill {
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: transparent;
+  }
+  .shape-pill[data-shape="A"] { color: var(--A); border-color: var(--A-dim); }
+  .shape-pill[data-shape="G"] { color: var(--G); border-color: var(--G-dim); }
+  .shape-pill[data-shape="E"] { color: var(--E); border-color: var(--E-dim); }
+  .shape-pill[data-shape="D"] { color: var(--D); border-color: var(--D-dim); }
+  .shape-pill[data-shape="C"] { color: var(--C); border-color: var(--C-dim); }
+  .shape-pill.active[data-shape="A"] { background: var(--A-dim); }
+  .shape-pill.active[data-shape="G"] { background: var(--G-dim); }
+  .shape-pill.active[data-shape="E"] { background: var(--E-dim); }
+  .shape-pill.active[data-shape="D"] { background: var(--D-dim); }
+  .shape-pill.active[data-shape="C"] { background: var(--C-dim); }
+
+  /* Notes display */
+  .notes-display {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  .notes-display .note-list {
+    display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px;
+  }
+  .note-badge {
+    background: rgba(255,255,255,0.06);
+    border-radius: 4px;
+    padding: 4px 10px;
+    font-size: 0.75rem;
+    color: var(--text);
+  }
+
+  /* ── CONTENT AREA ── */
+  .content {
+    padding: 2rem 2.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    overflow-y: auto;
+  }
+
+  /* ── NECK VISUALIZER ── */
+  .neck-container {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .neck-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .neck-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.4rem;
+    font-style: italic;
+  }
+
+  .neck-key-badge {
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+
+  /* Fret numbers */
+  .fret-numbers {
+    display: grid;
+    grid-template-columns: 40px repeat(13, 1fr);
+    gap: 0;
+    margin-bottom: 6px;
+  }
+  .fret-num {
+    text-align: center;
+    font-size: 0.6rem;
+    color: var(--muted);
+    padding: 0 2px;
+  }
+
+  /* Guitar strings */
+  .strings-wrap { position: relative; }
+
+  .string-row {
+    display: grid;
+    grid-template-columns: 40px repeat(13, 1fr);
+    align-items: center;
+    margin-bottom: 3px;
+  }
+  .string-name {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: right;
+    padding-right: 10px;
+  }
+  .fret-cell {
+    position: relative;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fret-line {
+    position: absolute;
+    top: 50%;
+    left: 0; right: 0;
+    height: 1px;
+    transform: translateY(-50%);
+  }
+  .string-row:nth-child(1) .fret-line { background: rgba(255,255,255,0.35); height: 1px; }
+  .string-row:nth-child(2) .fret-line { background: rgba(255,255,255,0.28); height: 1.5px; }
+  .string-row:nth-child(3) .fret-line { background: rgba(255,255,255,0.22); height: 2px; }
+  .string-row:nth-child(4) .fret-line { background: rgba(255,255,255,0.2); height: 2.5px; }
+  .string-row:nth-child(5) .fret-line { background: rgba(255,255,255,0.18); height: 3px; }
+  .string-row:nth-child(6) .fret-line { background: rgba(255,255,255,0.15); height: 3.5px; }
+
+  .fret-border {
+    position: absolute;
+    top: 0; bottom: 0;
+    right: 0;
+    width: 1px;
+    background: rgba(255,255,255,0.1);
+  }
+  .fret-cell:first-child .fret-border { display: none; }
+
+  .dot {
+    position: relative;
+    z-index: 2;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 700;
+    cursor: default;
+    transition: transform 0.15s, opacity 0.2s;
+    letter-spacing: 0;
+  }
+  .dot:hover { transform: scale(1.15); }
+  .dot.root { width: 24px; height: 24px; border: 2px solid rgba(255,255,255,0.6); }
+
+  .dot[data-shape="A"] { background: var(--A); color: #1a0f00; }
+  .dot[data-shape="G"] { background: var(--G); color: #000d24; }
+  .dot[data-shape="E"] { background: var(--E); color: #1a0d40; }
+  .dot[data-shape="D"] { background: var(--D); color: #3d0000; }
+  .dot[data-shape="C"] { background: var(--C); color: #003320; }
+  .dot.dimmed { opacity: 0.15; }
+
+  /* Nut */
+  .nut {
+    position: absolute;
+    left: 40px;
+    top: 0; bottom: 0;
+    width: 4px;
+    background: rgba(255,255,255,0.3);
+    border-radius: 2px;
+  }
+
+  /* Position markers on neck */
+  .position-markers {
+    display: grid;
+    grid-template-columns: 40px repeat(13, 1fr);
+    margin-top: 4px;
+  }
+  .pos-marker {
+    display: flex;
+    justify-content: center;
+  }
+  .pos-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    margin: 2px auto;
+  }
+
+  /* ── POSITIONS TABLE ── */
+  .positions-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+  }
+
+  .pos-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    transition: border-color 0.2s, opacity 0.2s;
+    cursor: default;
+  }
+  .pos-card:hover { border-color: rgba(255,255,255,0.2); }
+  .pos-card.dimmed { opacity: 0.3; }
+
+  .pos-card-shape {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.2rem;
+    font-style: italic;
+    margin-bottom: 4px;
+    line-height: 1;
+  }
+  .pos-card[data-shape="A"] .pos-card-shape { color: var(--A); }
+  .pos-card[data-shape="G"] .pos-card-shape { color: var(--G); }
+  .pos-card[data-shape="E"] .pos-card-shape { color: var(--E); }
+  .pos-card[data-shape="D"] .pos-card-shape { color: var(--D); }
+  .pos-card[data-shape="C"] .pos-card-shape { color: var(--C); }
+
+  .pos-card-fret {
+    font-size: 0.7rem;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .pos-card-root {
+    font-size: 0.65rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    padding-top: 8px;
+    margin-top: 4px;
+    line-height: 1.5;
+  }
+
+  /* ── SCALE REFERENCE ── */
+  .scale-ref {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+  }
+
+  .ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+
+  .ref-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    background: var(--bg3);
+  }
+  .ref-card h4 {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .ref-note-row {
+    display: flex; gap: 5px; flex-wrap: wrap;
+  }
+  .ref-note {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+  }
+  .ref-note.root-note { color: var(--A); border-color: var(--A-dim); }
+
+  /* footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: fixed;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 0.65rem;
+    color: var(--text);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .tooltip.visible { opacity: 1; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    aside { border-right: none; border-bottom: 1px solid var(--border); }
+    .positions-grid { grid-template-columns: repeat(3, 1fr); }
+    .ref-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">CAGED <span>system</span></div>
+    <div class="subtitle">Guitar Theory Reference Tool</div>
+  </div>
+  <div class="mode-toggle">
+    <button class="active" id="btnMajor">Major</button>
+    <button id="btnMinor">Minor</button>
+  </div>
+</header>
+
+<main>
+  <aside>
+    <div>
+      <div class="section-label">Key</div>
+      <div class="key-grid" id="keyGrid"></div>
+    </div>
+
+    <div>
+      <div class="section-label">Scale Type</div>
+      <div class="scale-toggle" id="scaleToggle">
+        <button class="scale-btn active" data-scale="pentatonic">Pentatonic (5 notes)</button>
+        <button class="scale-btn" data-scale="full">Full Scale (7 notes)</button>
+        <button class="scale-btn" data-scale="triad">Triad (3 notes)</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Highlight Shape</div>
+      <div class="shape-filter" id="shapeFilter">
+        <button class="shape-pill active" data-shape="A">A</button>
+        <button class="shape-pill active" data-shape="G">G</button>
+        <button class="shape-pill active" data-shape="E">E</button>
+        <button class="shape-pill active" data-shape="D">D</button>
+        <button class="shape-pill active" data-shape="C">C</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="notes-display">
+        <div class="section-label">Scale Notes</div>
+        <div class="note-list" id="noteList"></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="notes-display" style="margin-top:auto">
+        <div class="section-label" style="margin-bottom:8px">Legend</div>
+        <div style="display:flex;flex-direction:column;gap:6px;font-size:0.65rem;color:var(--muted)">
+          <span>● Coloured dot = scale note</span>
+          <span>◉ Ring = root note</span>
+          <span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+            <span style="color:var(--A)">■ A shape</span>
+            <span style="color:var(--G)">■ G shape</span>
+            <span style="color:var(--E)">■ E shape</span>
+            <span style="color:var(--D)">■ D shape</span>
+            <span style="color:var(--C)">■ C shape</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="content">
+    <!-- Neck -->
+    <div class="neck-container">
+      <div class="neck-header">
+        <div class="neck-title">Fretboard</div>
+        <div class="neck-key-badge" id="neckLabel">Key of A — Major Pentatonic</div>
+      </div>
+      <div id="neckViz"></div>
+    </div>
+
+    <!-- Position cards -->
+    <div>
+      <div class="section-label" style="margin-bottom:0.75rem" id="positionsLabel">5 Positions across the neck</div>
+      <div class="positions-grid" id="positionsGrid"></div>
+    </div>
+
+    <!-- Scale reference -->
+    <div class="scale-ref">
+      <div class="section-label">Theory Reference</div>
+      <div class="ref-grid" id="theoryRef"></div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <span>CAGED Guitar Theory Tool</span>
+  <span>All 5 positions — same scale, different windows</span>
+</footer>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const DISPLAY_KEYS = ['C','C#','D','Eb','E','F','F#','G','Ab','A','Bb','B'];
+const KEY_MAP = { 'Eb':'D#', 'Ab':'G#', 'Bb':'A#' };
+
+function noteIndex(n) {
+  return NOTES.indexOf(KEY_MAP[n] || n);
+}
+
+function buildScale(root, intervals) {
+  const ri = noteIndex(root);
+  return intervals.map(i => NOTES[(ri + i) % 12]);
+}
+
+const SCALE_INTERVALS = {
+  major: { pentatonic: [0,2,4,7,9], full: [0,2,4,5,7,9,11], triad: [0,4,7] },
+  minor: { pentatonic: [0,3,5,7,10], full: [0,2,3,5,7,8,10], triad: [0,3,7] }
+};
+
+// Open string notes: E2 A2 D3 G3 B3 E4
+const OPEN_STRINGS = ['E','B','G','D','A','E']; // high to low for display
+
+// CAGED shape definitions: fret window relative to root fret
+const CAGED_SHAPES = {
+  C: { rootString: 4, openNote: 'A', range: [-3, 1] },
+  A: { rootString: 4, openNote: 'A', range: [0, 3] },
+  G: { rootString: 5, openNote: 'E', range: [-3, 0] },
+  E: { rootString: 5, openNote: 'E', range: [-1, 3] },
+  D: { rootString: 3, openNote: 'D', range: [0, 3] },
+};
+
+// ─── STATE ───────────────────────────────────────────────────────
+let state = {
+  key: 'A',
+  mode: 'major',
+  scale: 'pentatonic',
+  activeShapes: new Set(['A','G','E','D','C'])
+};
+
+// ─── COMPUTE POSITIONS ───────────────────────────────────────────
+function getRootFret(shape, key) {
+  const ri = noteIndex(key);
+  const oi = noteIndex(CAGED_SHAPES[shape].openNote);
+  let fret = (ri - oi + 12) % 12;
+  if (fret + CAGED_SHAPES[shape].range[0] < 0) fret += 12;
+  return fret;
+}
+
+function getPositions() {
+  return ['C','A','G','E','D'].map(shape => ({
+    shape,
+    fret: getRootFret(shape, state.key)
+  })).sort((a,b) => a.fret - b.fret);
+}
+
+function fretLabel(f) {
+  if (f === 0) return 'Open pos.';
+  const s = ['','1st','2nd','3rd','4th','5th','6th','7th','8th','9th','10th','11th','12th'];
+  return (s[f] || f+'th') + ' fret';
+}
+
+function rootStringLabel(shape) {
+  const strNames = { 4: 'A string', 5: 'low E string', 3: 'D string' };
+  return 'Root on ' + strNames[CAGED_SHAPES[shape].rootString];
+}
+
+// ─── RENDER NECK ─────────────────────────────────────────────────
+function renderNeck() {
+  const container = document.getElementById('neckViz');
+  const scaleNotes = buildScale(state.key, SCALE_INTERVALS[state.mode][state.scale]);
+  const positions = getPositions();
+
+  // Build a map: shape -> startFret
+  const shapeFrets = {};
+  positions.forEach(p => { shapeFrets[p.shape] = p.fret; });
+
+  // For each string and fret 0-12, determine what dots to show
+  // strings: index 0=high e, 1=B, 2=G, 3=D, 4=A, 5=Low E
+  const stringOpen = [4,11,7,2,9,4]; // semitone index of open string (E=4,B=11,G=7,D=2,A=9,E=4)
+
+  // Build dot data: array of { str, fret, shape, isRoot, noteName }
+  const dots = [];
+
+  positions.forEach(({ shape, fret: rootFret }) => {
+    const range = CAGED_SHAPES[shape].range;
+    for (let strIdx = 0; strIdx < 6; strIdx++) {
+      for (let fret = 0; fret <= 12; fret++) {
+        const offset = fret - rootFret;
+        if (offset < range[0] || offset > range[1]) continue;
+        const noteIdx = (stringOpen[strIdx] + fret) % 12;
+        const noteName = NOTES[noteIdx];
+        if (!scaleNotes.includes(noteName)) continue;
+        const isRoot = (noteIdx === noteIndex(state.key));
+        dots.push({ str: strIdx, fret, shape, isRoot, noteName });
+      }
+    }
+  });
+
+  // Build HTML
+  let html = '<div class="fret-numbers"><div></div>';
+  for (let f = 0; f <= 12; f++) {
+    html += `<div class="fret-num">${f === 0 ? '' : f}</div>`;
+  }
+  html += '</div>';
+
+  html += '<div class="strings-wrap"><div class="nut"></div>';
+
+  const STRING_NAMES = ['e','B','G','D','A','E'];
+  for (let s = 0; s < 6; s++) {
+    html += `<div class="string-row"><div class="string-name">${STRING_NAMES[s]}</div>`;
+    for (let f = 0; f <= 12; f++) {
+      const dot = dots.find(d => d.str === s && d.fret === f);
+      const thick = s / 5;
+      html += `<div class="fret-cell">`;
+      html += `<div class="fret-line"></div>`;
+      if (f > 0) html += `<div class="fret-border"></div>`;
+      if (dot) {
+        const dimmed = !state.activeShapes.has(dot.shape) ? ' dimmed' : '';
+        const rootCls = dot.isRoot ? ' root' : '';
+        html += `<div class="dot${rootCls}${dimmed}" data-shape="${dot.shape}" data-note="${dot.noteName}" title="${dot.noteName}${dot.isRoot ? ' (root)' : ''}">${dot.noteName}</div>`;
+      }
+      html += `</div>`;
+    }
+    html += '</div>';
+  }
+
+  // Position markers
+  html += '<div class="position-markers"><div></div>';
+  for (let f = 0; f <= 12; f++) {
+    const markers = [3,5,7,9,12];
+    if (markers.includes(f)) {
+      html += `<div class="pos-marker"><div class="pos-dot"></div></div>`;
+    } else {
+      html += '<div></div>';
+    }
+  }
+  html += '</div>';
+
+  html += '</div>';
+  container.innerHTML = html;
+
+  // Tooltip
+  container.querySelectorAll('.dot').forEach(dot => {
+    dot.addEventListener('mouseenter', e => {
+      const tt = document.getElementById('tooltip');
+      tt.textContent = `${e.target.dataset.note} — ${e.target.dataset.shape} shape`;
+      tt.classList.add('visible');
+    });
+    dot.addEventListener('mousemove', e => {
+      const tt = document.getElementById('tooltip');
+      tt.style.left = (e.clientX + 12) + 'px';
+      tt.style.top = (e.clientY - 20) + 'px';
+    });
+    dot.addEventListener('mouseleave', () => {
+      document.getElementById('tooltip').classList.remove('visible');
+    });
+  });
+
+  // Update neck label
+  const scaleName = { pentatonic: 'Pentatonic', full: 'Full Scale', triad: 'Triad' }[state.scale];
+  const modeName = state.mode === 'major' ? 'Major' : 'Minor';
+  document.getElementById('neckLabel').textContent = `Key of ${state.key} — ${modeName} ${scaleName}`;
+}
+
+// ─── RENDER POSITIONS ─────────────────────────────────────────────
+function renderPositions() {
+  const positions = getPositions(); // already sorted by fret ascending
+  const grid = document.getElementById('positionsGrid');
+
+  // Update section label with fret-sorted order
+  const orderStr = positions.map(p => p.shape).join(' → ');
+  document.getElementById('positionsLabel').textContent = `5 Positions across the neck — ${orderStr}`;
+
+  grid.innerHTML = positions.map(({ shape, fret }) => {
+    const dimmed = !state.activeShapes.has(shape) ? ' dimmed' : '';
+    return `
+      <div class="pos-card${dimmed}" data-shape="${shape}">
+        <div class="pos-card-shape">${shape}</div>
+        <div class="pos-card-fret">${fretLabel(fret)}</div>
+        <div class="pos-card-root">${rootStringLabel(shape)}</div>
+      </div>`;
+  }).join('');
+}
+
+// ─── RENDER THEORY ────────────────────────────────────────────────
+function renderTheory() {
+  const scaleNotes = buildScale(state.key, SCALE_INTERVALS[state.mode][state.scale]);
+  const pentatonicNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].pentatonic);
+  const triadNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].triad);
+  const fullNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].full);
+
+  const ri = noteIndex(state.key);
+
+  function noteRow(notes) {
+    return notes.map(n => {
+      const isRoot = (noteIndex(n) === ri);
+      return `<span class="ref-note${isRoot ? ' root-note' : ''}">${n}</span>`;
+    }).join('');
+  }
+
+  const modeName = state.mode === 'major' ? 'Major' : 'Minor';
+
+  document.getElementById('theoryRef').innerHTML = `
+    <div class="ref-card">
+      <h4>Triad (3 notes)</h4>
+      <div class="ref-note-row">${noteRow(triadNotes)}</div>
+    </div>
+    <div class="ref-card">
+      <h4>${modeName} Pentatonic (5 notes)</h4>
+      <div class="ref-note-row">${noteRow(pentatonicNotes)}</div>
+    </div>
+    <div class="ref-card">
+      <h4>Full ${modeName} Scale (7 notes)</h4>
+      <div class="ref-note-row">${noteRow(fullNotes)}</div>
+    </div>
+    <div class="ref-card">
+      <h4>Current selection</h4>
+      <div class="ref-note-row">${noteRow(scaleNotes)}</div>
+    </div>
+  `;
+
+  // Note list in sidebar
+  document.getElementById('noteList').innerHTML = scaleNotes.map(n => {
+    const isRoot = noteIndex(n) === ri;
+    return `<span class="note-badge" style="${isRoot ? 'background:rgba(232,168,56,0.2);color:var(--A)' : ''}">${n}</span>`;
+  }).join('');
+}
+
+// ─── FULL RENDER ─────────────────────────────────────────────────
+function render() {
+  renderNeck();
+  renderPositions();
+  renderTheory();
+}
+
+// ─── UI SETUP ────────────────────────────────────────────────────
+// Keys
+const keyGrid = document.getElementById('keyGrid');
+DISPLAY_KEYS.forEach(k => {
+  const btn = document.createElement('button');
+  btn.className = 'key-btn' + (k === state.key ? ' active' : '');
+  btn.textContent = k;
+  btn.onclick = () => {
+    state.key = k;
+    document.querySelectorAll('.key-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  };
+  keyGrid.appendChild(btn);
+});
+
+// Major/Minor toggle
+document.getElementById('btnMajor').onclick = () => {
+  state.mode = 'major';
+  document.getElementById('btnMajor').classList.add('active');
+  document.getElementById('btnMinor').classList.remove('active');
+  render();
+};
+document.getElementById('btnMinor').onclick = () => {
+  state.mode = 'minor';
+  document.getElementById('btnMinor').classList.add('active');
+  document.getElementById('btnMajor').classList.remove('active');
+  render();
+};
+
+// Scale type
+document.querySelectorAll('.scale-btn').forEach(btn => {
+  btn.onclick = () => {
+    state.scale = btn.dataset.scale;
+    document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  };
+});
+
+// Shape filter
+document.querySelectorAll('.shape-pill').forEach(pill => {
+  pill.onclick = () => {
+    const shape = pill.dataset.shape;
+    if (state.activeShapes.has(shape)) {
+      if (state.activeShapes.size > 1) {
+        state.activeShapes.delete(shape);
+        pill.classList.remove('active');
+      }
+    } else {
+      state.activeShapes.add(shape);
+      pill.classList.add('active');
+    }
+    render();
+  };
+});
+
+// Initial render
+render();
+</script>
+</body>
+</html>
