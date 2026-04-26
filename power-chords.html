@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Power Chords — Reference</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4C22 4 16 12 14 20c-2 8-1 16 2 24s8 12 16 12 13-4 16-12 4-16 2-24C48 12 42 4 32 4z' fill='%23e8a838'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='26' font-style='italic' fill='%231a0f00'%3EC%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --accent: #e8a838;
+    --E-col: #a78bfa;
+    --A-col: #e8a838;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo span { font-style: italic; color: var(--accent); }
+
+  .subtitle {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .nav-link {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-link:hover { color: var(--text); }
+
+  /* ── JUMP NAV ── */
+  .jump-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 0.75rem 2.5rem;
+    display: flex;
+    gap: 0.25rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .jump-nav a {
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--muted);
+    padding: 6px 12px;
+    border-radius: 5px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+  }
+  .jump-nav a:hover { color: var(--text); border-color: var(--border); background: var(--bg3); }
+  .jump-nav .sep { color: rgba(255,255,255,0.15); font-size: 0.6rem; user-select: none; }
+
+  /* ── CONTENT ── */
+  .content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2.5rem 4rem;
+  }
+
+  .section {
+    padding-top: 2.5rem;
+  }
+
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.8rem;
+    font-style: italic;
+    margin-bottom: 0.4rem;
+  }
+
+  .section-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  /* ── SHAPE DIAGRAM ── */
+  .shapes-row {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+  }
+
+  .shape-box {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .shape-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .shape-note {
+    font-size: 0.65rem;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  /* ── FRETBOARD MAP ── */
+  .fretboard-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .fretboard {
+    min-width: 700px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .fretboard-row {
+    display: grid;
+    grid-template-columns: 60px repeat(13, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+  .fretboard-row:last-child { border-bottom: none; }
+
+  .fb-header-row .fb-cell {
+    background: var(--bg3);
+  }
+
+  .fb-cell {
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 0.65rem;
+    border-right: 1px solid var(--border);
+  }
+  .fb-cell:last-child { border-right: none; }
+
+  .fb-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    border-right: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .fb-fret-num {
+    color: var(--muted);
+    font-size: 0.6rem;
+  }
+
+  .fb-note {
+    font-weight: 700;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    padding: 3px 0;
+    transition: all 0.1s;
+  }
+
+  /* note color coding by string */
+  .fb-E .fb-note { color: var(--E-col); }
+  .fb-A .fb-note { color: var(--A-col); }
+
+  /* highlight open/12 */
+  .fb-open .fb-note {
+    background: rgba(255,255,255,0.06);
+  }
+
+  /* ── REFERENCE TABLE ── */
+  .ref-tables {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .ref-table-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .ref-table-header {
+    padding: 0.75rem 1rem;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg3);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .string-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .ref-row {
+    display: grid;
+    grid-template-columns: 1fr 80px 1fr;
+    align-items: center;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-row:hover { background: rgba(255,255,255,0.03); }
+
+  .ref-note {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.3rem;
+    font-style: italic;
+  }
+
+  .ref-fret {
+    font-size: 1.5rem;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .ref-fingers {
+    font-size: 0.65rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.5;
+  }
+
+  /* ── SWITCH MAP ── */
+  .switch-note { font-size: 0.7rem; color: var(--muted); margin-bottom: 1.25rem; line-height: 1.6; }
+
+  .switch-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.75rem;
+  }
+  .switch-table th {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 400;
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .switch-table td {
+    padding: 8px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  .switch-table tr:last-child td { border-bottom: none; }
+  .switch-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  .sw-note {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    min-width: 32px;
+    display: inline-block;
+  }
+
+  .sw-pos {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-right: 8px;
+  }
+
+  .sw-string-tag {
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid var(--border);
+  }
+  .sw-string-tag.e { color: var(--E-col); border-color: rgba(167,139,250,0.3); }
+  .sw-string-tag.a { color: var(--A-col); border-color: rgba(232,168,56,0.3); }
+
+  .sw-fret {
+    font-weight: 700;
+    font-size: 0.9rem;
+    min-width: 24px;
+  }
+
+  .sw-diff {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+
+  .sw-close { color: #34d399; }
+  .sw-mid   { color: var(--text); }
+  .sw-far   { color: var(--muted); }
+
+  /* ── PROGRESSIONS ── */
+  .prog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .prog-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+  }
+
+  .prog-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: 1.2rem;
+    font-style: italic;
+    margin-bottom: 0.25rem;
+  }
+
+  .prog-formula {
+    font-size: 0.65rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.75rem;
+  }
+
+  .prog-key-block {
+    margin-bottom: 0.6rem;
+  }
+
+  .prog-key-label {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+  }
+
+  .prog-chords {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .prog-chord {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-width: 44px;
+  }
+
+  .prog-chord-name {
+    font-weight: 700;
+    font-size: 0.8rem;
+  }
+
+  .prog-chord-pos {
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+
+  .pos-e { color: var(--E-col); }
+  .pos-a { color: var(--A-col); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 750px) {
+    header { padding: 1.5rem; }
+    .jump-nav { padding: 0.75rem 1.5rem; }
+    .content { padding: 0 1.5rem 3rem; }
+    .ref-tables { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Power <span>Chords</span></div>
+    <div class="subtitle">Fast-Switch Reference</div>
+  </div>
+  <div class="nav-links">
+    <a href="barre-chords.html" class="nav-link">Barre Chords</a>
+    <a href="caged-guitar-tool.html" class="nav-link">&larr; CAGED Tool</a>
+  </div>
+</header>
+
+<nav class="jump-nav">
+  <a href="#map">Fretboard Map</a>
+  <span class="sep">|</span>
+  <a href="#reference">Quick Ref</a>
+  <span class="sep">|</span>
+  <a href="#switching">Switching</a>
+  <span class="sep">|</span>
+  <a href="#progressions">Progressions</a>
+</nav>
+
+<div class="content">
+
+  <!-- SHAPE INTRO -->
+  <section class="section" id="shape">
+    <h2 class="section-title">The Shape</h2>
+    <p class="section-desc">One shape, two positions. Root on 6th string or 5th string — same two-finger grip both ways.</p>
+    <div class="shapes-row" id="shapesRow"></div>
+  </section>
+
+  <!-- FRETBOARD MAP -->
+  <section class="section" id="map">
+    <h2 class="section-title">Fretboard Map</h2>
+    <p class="section-desc">Every note across frets 0–12. Same note appears on both strings — use whichever is closer to where you already are.</p>
+    <div class="fretboard-wrap">
+      <div class="fretboard" id="fretboard"></div>
+    </div>
+  </section>
+
+  <!-- QUICK REFERENCE -->
+  <section class="section" id="reference">
+    <h2 class="section-title">Quick Reference</h2>
+    <p class="section-desc">All 12 power chords by fret position, sorted low to high.</p>
+    <div class="ref-tables" id="refTables"></div>
+  </section>
+
+  <!-- SWITCHING -->
+  <section class="section" id="switching">
+    <h2 class="section-title">Switching Between Chords</h2>
+    <p class="section-desc">For each chord, both positions. Jump to whichever string keeps your hand moving least. <span style="color:var(--sw-close,#34d399)">Green fret diff = 3 or less</span> — easy reach.</p>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;overflow:hidden;">
+      <table class="switch-table" id="switchTable">
+        <thead>
+          <tr>
+            <th>Chord</th>
+            <th>E-string (6th)</th>
+            <th>A-string (5th)</th>
+            <th>Fret diff</th>
+          </tr>
+        </thead>
+        <tbody id="switchBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- PROGRESSIONS -->
+  <section class="section" id="progressions">
+    <h2 class="section-title">Common Progressions</h2>
+    <p class="section-desc">Fret positions shown for both strings. Pick the one that keeps your fretting hand in one spot.</p>
+    <div class="prog-grid" id="progGrid"></div>
+  </section>
+
+</div>
+
+<footer>
+  <span>Power Chord Reference</span>
+  <span>Root + 5th — all 12 keys</span>
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const NOTES = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const DISPLAY = {
+  'C':'C','C#':'C#','D':'D','D#':'Eb','E':'E','F':'F',
+  'F#':'F#','G':'G','G#':'Ab','A':'A','A#':'Bb','B':'B'
+};
+
+function noteIdx(n) {
+  const map = {'Eb':'D#','Ab':'G#','Bb':'A#'};
+  return NOTES.indexOf(map[n] || n);
+}
+
+function fretFor(openNote, target) {
+  return (noteIdx(target) - noteIdx(openNote) + 12) % 12;
+}
+
+function dn(n) { return DISPLAY[n] || n; }
+
+// All 12 notes sorted by E-string fret ascending
+const ALL_NOTES_BY_E_FRET = [...NOTES].sort((a, b) => fretFor('E', a) - fretFor('E', b));
+
+// Chromatic order for display (starting C)
+const CHROMATIC = NOTES;
+
+// ─── SHAPE DIAGRAMS ──────────────────────────────────────────────
+function renderShapeSVG(rootStr) {
+  // rootStr: 5=low E (6th), 4=A (5th)
+  // Shape: root @ fret 0, 5th @ fret+2 on next string, octave (opt) @ same
+  const strings = ['E','A','D','G','B','e'];
+  const strSpacing = 18;
+  const fretSpacing = 24;
+  const padLeft = 22;
+  const padTop = 18;
+  const numFrets = 3;
+  const w = padLeft + 5 * strSpacing + 12;
+  const h = padTop + numFrets * fretSpacing + 8;
+
+  const strToX = s => padLeft + (5 - s) * strSpacing;
+  const col = rootStr === 5 ? 'var(--E-col)' : 'var(--A-col)';
+
+  let d = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+
+  // Fret lines
+  for (let f = 0; f <= numFrets; f++) {
+    const y = padTop + f * fretSpacing;
+    const sw = f === 0 ? 3 : 1;
+    const c = f === 0 ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)';
+    d += `<line x1="${padLeft}" y1="${y}" x2="${padLeft+5*strSpacing}" y2="${y}" stroke="${c}" stroke-width="${sw}"/>`;
+  }
+  // String lines
+  for (let s = 0; s < 6; s++) {
+    const x = padLeft + s * strSpacing;
+    d += `<line x1="${x}" y1="${padTop}" x2="${x}" y2="${padTop+numFrets*fretSpacing}" stroke="rgba(255,255,255,0.18)" stroke-width="1"/>`;
+  }
+  // Muted strings above nut
+  for (let s = 0; s < 6; s++) {
+    const shouldPlay = rootStr === 5
+      ? (s === 5 || s === 4 || s === 3)  // low E, A, D
+      : (s === 4 || s === 3 || s === 2); // A, D, G
+    if (!shouldPlay) {
+      d += `<text x="${strToX(s)}" y="${padTop-6}" text-anchor="middle" font-family="Space Mono,monospace" font-size="9" fill="#555">X</text>`;
+    }
+  }
+  // Dots: root at fret 1 (so it shows inside the grid), 5th and octave at fret+2=3
+  // Actually let me show at fret 0 = barre (open position)
+  // Root
+  const rootX = strToX(rootStr);
+  const fretY = f => padTop + f * fretSpacing + fretSpacing / 2;
+  d += `<circle cx="${rootX}" cy="${fretY(0)}" r="7" fill="${col}"/>`;
+  d += `<circle cx="${rootX}" cy="${fretY(0)}" r="9" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/>`;
+  // 5th (rootStr-1, +2 frets)
+  const fifthStr = rootStr - 1;
+  d += `<circle cx="${strToX(fifthStr)}" cy="${fretY(2)}" r="6" fill="${col}"/>`;
+  // octave (rootStr-2, +2 frets)
+  const octStr = rootStr - 2;
+  d += `<circle cx="${strToX(octStr)}" cy="${fretY(2)}" r="5" fill="${col}" opacity="0.5"/>`;
+  // Label: fret numbers
+  for (let f = 1; f <= numFrets; f++) {
+    const y = padTop + (f-1)*fretSpacing + fretSpacing/2 + 4;
+    d += `<text x="${padLeft-12}" y="${y}" text-anchor="middle" font-family="Space Mono,monospace" font-size="8" fill="#555">${f}</text>`;
+  }
+
+  d += '</svg>';
+  return d;
+}
+
+document.getElementById('shapesRow').innerHTML = `
+  <div class="shape-box">
+    <div class="shape-label" style="color:var(--E-col)">E-string root &mdash; 6th string</div>
+    ${renderShapeSVG(5)}
+    <div class="shape-note">Root on low E &nbsp;&bull;&nbsp; 5th two frets up on A string<br>Mute G B e strings</div>
+  </div>
+  <div class="shape-box">
+    <div class="shape-label" style="color:var(--A-col)">A-string root &mdash; 5th string</div>
+    ${renderShapeSVG(4)}
+    <div class="shape-note">Root on A string &nbsp;&bull;&nbsp; 5th two frets up on D string<br>Mute low E, B, e strings</div>
+  </div>`;
+
+// ─── FRETBOARD MAP ──────────────────────────────────────────────
+(function buildFretboard() {
+  const fb = document.getElementById('fretboard');
+  const frets = Array.from({length: 13}, (_, i) => i); // 0-12
+
+  // Header row
+  let header = `<div class="fretboard-row fb-header-row">
+    <div class="fb-label" style="background:var(--bg3);font-size:0.55rem;color:var(--muted)">String</div>`;
+  frets.forEach(f => {
+    header += `<div class="fb-cell"><span class="fb-fret-num">${f}</span></div>`;
+  });
+  header += '</div>';
+
+  // E-string row
+  let eRow = `<div class="fretboard-row fb-E">
+    <div class="fb-label" style="color:var(--E-col)">Low E<br><span style="font-size:0.55rem;opacity:0.6">6th</span></div>`;
+  frets.forEach(f => {
+    const note = NOTES[(noteIdx('E') + f) % 12];
+    const isOpen = f === 0 || f === 12;
+    eRow += `<div class="fb-cell ${isOpen ? 'fb-open' : ''}"><span class="fb-note">${dn(note)}5</span></div>`;
+  });
+  eRow += '</div>';
+
+  // A-string row
+  let aRow = `<div class="fretboard-row fb-A">
+    <div class="fb-label" style="color:var(--A-col)">A<br><span style="font-size:0.55rem;opacity:0.6">5th</span></div>`;
+  frets.forEach(f => {
+    const note = NOTES[(noteIdx('A') + f) % 12];
+    const isOpen = f === 0 || f === 12;
+    aRow += `<div class="fb-cell ${isOpen ? 'fb-open' : ''}"><span class="fb-note">${dn(note)}5</span></div>`;
+  });
+  aRow += '</div>';
+
+  fb.innerHTML = header + eRow + aRow;
+})();
+
+// ─── QUICK REFERENCE TABLES ─────────────────────────────────────
+(function buildRefTables() {
+  const byEFret = [...NOTES].sort((a, b) => fretFor('E', a) - fretFor('E', b));
+  const byAFret = [...NOTES].sort((a, b) => fretFor('A', a) - fretFor('A', b));
+
+  function tableCard(title, color, notes, openNote) {
+    let rows = notes.map(note => {
+      const fret = fretFor(openNote, note);
+      const fifthFret = fret + 2;
+      return `<div class="ref-row">
+        <div class="ref-note" style="color:${color}">${dn(note)}5</div>
+        <div class="ref-fret">${fret}</div>
+        <div class="ref-fingers">${fret}&nbsp;/&nbsp;${fifthFret}&nbsp;/&nbsp;${fifthFret}</div>
+      </div>`;
+    }).join('');
+    return `<div class="ref-table-card">
+      <div class="ref-table-header">
+        <div class="string-dot" style="background:${color}"></div>
+        ${title}
+      </div>
+      ${rows}
+    </div>`;
+  }
+
+  document.getElementById('refTables').innerHTML =
+    tableCard('E-string root &mdash; 6th string', 'var(--E-col)', byEFret, 'E') +
+    tableCard('A-string root &mdash; 5th string', 'var(--A-col)', byAFret, 'A');
+})();
+
+// ─── SWITCH TABLE ───────────────────────────────────────────────
+(function buildSwitchTable() {
+  const body = document.getElementById('switchBody');
+  let html = '';
+
+  CHROMATIC.forEach(note => {
+    const eFret = fretFor('E', note);
+    const aFret = fretFor('A', note);
+    const diff = Math.abs(eFret - aFret);
+    const diffClass = diff <= 3 ? 'sw-close' : diff <= 6 ? 'sw-mid' : 'sw-far';
+
+    html += `<tr>
+      <td><span class="sw-note">${dn(note)}5</span></td>
+      <td>
+        <div class="sw-pos">
+          <span class="sw-string-tag e">6th</span>
+          <span class="sw-fret">${eFret}</span>
+        </div>
+      </td>
+      <td>
+        <div class="sw-pos">
+          <span class="sw-string-tag a">5th</span>
+          <span class="sw-fret">${aFret}</span>
+        </div>
+      </td>
+      <td><span class="sw-diff ${diffClass}">${diff} fret${diff !== 1 ? 's' : ''}</span></td>
+    </tr>`;
+  });
+
+  body.innerHTML = html;
+})();
+
+// ─── PROGRESSIONS ───────────────────────────────────────────────
+(function buildProgressions() {
+  function pos(note) {
+    return { name: dn(note) + '5', e: fretFor('E', note), a: fretFor('A', note) };
+  }
+  function semi(root, n) {
+    return NOTES[(noteIdx(root) + n) % 12];
+  }
+
+  const progs = [
+    {
+      title: 'I — IV — V',
+      formula: 'Rock staple',
+      keys: [
+        { key: 'E', chords: [pos('E'), pos('A'), pos('B')] },
+        { key: 'A', chords: [pos('A'), pos('D'), pos('E')] },
+        { key: 'G', chords: [pos('G'), pos('C'), pos('D')] },
+      ]
+    },
+    {
+      title: 'I — bVII — IV',
+      formula: 'Rock / anthem',
+      keys: [
+        { key: 'E', chords: [pos('E'), pos('D'), pos('A')] },
+        { key: 'A', chords: [pos('A'), pos('G'), pos('D')] },
+        { key: 'D', chords: [pos('D'), pos('C'), pos('G')] },
+      ]
+    },
+    {
+      title: 'I — IV — I — V',
+      formula: 'Punk / blues',
+      keys: [
+        { key: 'E', chords: [pos('E'), pos('A'), pos('E'), pos('B')] },
+        { key: 'A', chords: [pos('A'), pos('D'), pos('A'), pos('E')] },
+      ]
+    },
+    {
+      title: 'i — bVI — bIII — bVII',
+      formula: 'Minor rock / metal',
+      keys: [
+        { key: 'Em', chords: [pos('E'), pos('C'), pos('G'), pos('D')] },
+        { key: 'Am', chords: [pos('A'), pos('F'), pos('C'), pos('G')] },
+      ]
+    },
+    {
+      title: 'I — V — IV — I',
+      formula: '12-bar feel',
+      keys: [
+        { key: 'E', chords: [pos('E'), pos('B'), pos('A'), pos('E')] },
+        { key: 'A', chords: [pos('A'), pos('E'), pos('D'), pos('A')] },
+      ]
+    },
+    {
+      title: 'i — bVII — bVI — V',
+      formula: 'Minor descent',
+      keys: [
+        { key: 'Am', chords: [pos('A'), pos('G'), pos('F'), pos('E')] },
+        { key: 'Em', chords: [pos('E'), pos('D'), pos('C'), pos('B')] },
+      ]
+    },
+  ];
+
+  let html = '';
+  progs.forEach(prog => {
+    html += `<div class="prog-card">
+      <div class="prog-title">${prog.title}</div>
+      <div class="prog-formula">${prog.formula}</div>`;
+
+    prog.keys.forEach(k => {
+      html += `<div class="prog-key-block">
+        <div class="prog-key-label">Key of ${k.key}</div>
+        <div class="prog-chords">`;
+      k.chords.forEach(c => {
+        html += `<div class="prog-chord">
+          <div class="prog-chord-name">${c.name}</div>
+          <div class="prog-chord-pos"><span class="pos-e">E:${c.e}</span> <span class="pos-a">A:${c.a}</span></div>
+        </div>`;
+      });
+      html += '</div></div>';
+    });
+
+    html += '</div>';
+  });
+
+  document.getElementById('progGrid').innerHTML = html;
+})();
+</script>
+</body>
+</html>
