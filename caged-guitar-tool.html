@@ -422,6 +422,7 @@
     font-size: 0.7rem;
   }
   .ref-note.root-note { color: var(--A); border-color: var(--A-dim); }
+  .ref-note.distinct-note { color: var(--D); border-color: rgba(248,113,113,0.3); }
 
   /* footer */
   footer {
@@ -473,6 +474,7 @@
   <div class="mode-toggle">
     <button class="active" id="btnMajor">Major</button>
     <button id="btnMinor">Minor</button>
+    <button id="btnMetal">Metal</button>
   </div>
 </header>
 
@@ -485,11 +487,7 @@
 
     <div>
       <div class="section-label">Scale Type</div>
-      <div class="scale-toggle" id="scaleToggle">
-        <button class="scale-btn active" data-scale="pentatonic">Pentatonic (5 notes)</button>
-        <button class="scale-btn" data-scale="full">Full Scale (7 notes)</button>
-        <button class="scale-btn" data-scale="triad">Triad (3 notes)</button>
-      </div>
+      <div class="scale-toggle" id="scaleToggle"></div>
     </div>
 
     <div>
@@ -576,7 +574,20 @@ function buildScale(root, intervals) {
 
 const SCALE_INTERVALS = {
   major: { pentatonic: [0,2,4,7,9], full: [0,2,4,5,7,9,11], triad: [0,4,7] },
-  minor: { pentatonic: [0,3,5,7,10], full: [0,2,3,5,7,8,10], triad: [0,3,7] }
+  minor: { pentatonic: [0,3,5,7,10], full: [0,2,3,5,7,8,10], triad: [0,3,7] },
+  metal: {
+    harmonic:    [0,2,3,5,7,8,11],
+    phrygian:    [0,1,3,5,7,8,10],
+    phrygiandom: [0,1,4,5,7,8,10],
+    hungarian:   [0,2,3,6,7,8,11]
+  }
+};
+
+const METAL_SCALES = {
+  harmonic:    { name: 'Harmonic Minor',    formula: '1 – 2 – b3 – 4 – 5 – b6 – 7',    desc: 'Natural minor with a raised 7th. The augmented 2nd between b6 and 7 is the signature "dark exotic" sound. Yngwie, Randy Rhoads, Marty Friedman.' },
+  phrygian:    { name: 'Phrygian',          formula: '1 – b2 – b3 – 4 – 5 – b6 – b7',  desc: 'Natural minor with a flattened 2nd. The b2 creates crushing tension and dissonance. The sound of classic thrash metal riffs — Metallica, Slayer, Pantera.' },
+  phrygiandom: { name: 'Phrygian Dominant', formula: '1 – b2 – 3 – 4 – 5 – b6 – b7',  desc: '5th mode of harmonic minor. Combines Phrygian\'s b2 with a major 3rd — neoclassical metal meets Middle Eastern. Yngwie solos, flamenco-influenced shred.' },
+  hungarian:   { name: 'Hungarian Minor',   formula: '1 – 2 – b3 – #4 – 5 – b6 – 7',  desc: 'Harmonic minor with a raised 4th. Two augmented 2nds make it the most dramatic of the metal scales. Megadeth, Cannibal Corpse, Blackwater Park-era Opeth.' }
 };
 
 // Open string notes: E2 A2 D3 G3 B3 E4
@@ -719,9 +730,15 @@ function renderNeck() {
   });
 
   // Update neck label
-  const scaleName = { pentatonic: 'Pentatonic', full: 'Full Scale', triad: 'Triad' }[state.scale];
-  const modeName = state.mode === 'major' ? 'Major' : 'Minor';
-  document.getElementById('neckLabel').textContent = `Key of ${state.key} — ${modeName} ${scaleName}`;
+  let neckLabel;
+  if (state.mode === 'metal') {
+    neckLabel = `Key of ${state.key} — ${METAL_SCALES[state.scale].name}`;
+  } else {
+    const scaleName = { pentatonic: 'Pentatonic', full: 'Full Scale', triad: 'Triad' }[state.scale];
+    const modeName = state.mode === 'major' ? 'Major' : 'Minor';
+    neckLabel = `Key of ${state.key} — ${modeName} ${scaleName}`;
+  }
+  document.getElementById('neckLabel').textContent = neckLabel;
 }
 
 // ─── RENDER POSITIONS ─────────────────────────────────────────────
@@ -744,22 +761,73 @@ function renderPositions() {
   }).join('');
 }
 
+// ─── RENDER SCALE TOGGLE ─────────────────────────────────────────
+function renderScaleToggle() {
+  const toggle = document.getElementById('scaleToggle');
+  if (state.mode === 'metal') {
+    toggle.innerHTML = Object.entries(METAL_SCALES).map(([key, info]) =>
+      `<button class="scale-btn${state.scale === key ? ' active' : ''}" data-scale="${key}">${info.name}</button>`
+    ).join('');
+  } else {
+    toggle.innerHTML = `
+      <button class="scale-btn${state.scale === 'pentatonic' ? ' active' : ''}" data-scale="pentatonic">Pentatonic (5 notes)</button>
+      <button class="scale-btn${state.scale === 'full' ? ' active' : ''}" data-scale="full">Full Scale (7 notes)</button>
+      <button class="scale-btn${state.scale === 'triad' ? ' active' : ''}" data-scale="triad">Triad (3 notes)</button>`;
+  }
+  toggle.querySelectorAll('.scale-btn').forEach(btn => {
+    btn.onclick = () => {
+      state.scale = btn.dataset.scale;
+      toggle.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      render();
+    };
+  });
+}
+
 // ─── RENDER THEORY ────────────────────────────────────────────────
 function renderTheory() {
+  const ri = noteIndex(state.key);
+
+  function noteRow(notes, compareTo) {
+    return notes.map(n => {
+      const isRoot = (noteIndex(n) === ri);
+      const isDistinct = compareTo && !compareTo.includes(n) && !isRoot;
+      return `<span class="ref-note${isRoot ? ' root-note' : isDistinct ? ' distinct-note' : ''}">${n}</span>`;
+    }).join('');
+  }
+
+  if (state.mode === 'metal') {
+    const meta = METAL_SCALES[state.scale];
+    const scaleNotes = buildScale(state.key, SCALE_INTERVALS.metal[state.scale]);
+    const naturalMinorNotes = buildScale(state.key, SCALE_INTERVALS.minor.full);
+
+    document.getElementById('theoryRef').innerHTML = `
+      <div class="ref-card" style="grid-column:span 2">
+        <h4>${meta.name} &mdash; formula</h4>
+        <div style="font-size:0.9rem;letter-spacing:0.08em;margin-bottom:0.75rem;color:var(--text)">${meta.formula}</div>
+        <div style="font-size:0.7rem;color:var(--muted);line-height:1.6">${meta.desc}</div>
+      </div>
+      <div class="ref-card">
+        <h4>${meta.name} — ${state.key} &nbsp;<span style="font-weight:400;color:var(--D)">■ characteristic notes</span></h4>
+        <div class="ref-note-row">${noteRow(scaleNotes, naturalMinorNotes)}</div>
+      </div>
+      <div class="ref-card">
+        <h4>Natural Minor — ${state.key} &nbsp;<span style="font-weight:400;color:var(--muted)">(compare)</span></h4>
+        <div class="ref-note-row">${noteRow(naturalMinorNotes)}</div>
+      </div>`;
+
+    document.getElementById('noteList').innerHTML = scaleNotes.map(n => {
+      const isRoot = noteIndex(n) === ri;
+      const isDistinct = !naturalMinorNotes.includes(n);
+      return `<span class="note-badge" style="${isRoot ? 'background:rgba(232,168,56,0.2);color:var(--A)' : isDistinct ? 'background:rgba(248,113,113,0.12);color:var(--D)' : ''}">${n}</span>`;
+    }).join('');
+    return;
+  }
+
   const scaleNotes = buildScale(state.key, SCALE_INTERVALS[state.mode][state.scale]);
   const pentatonicNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].pentatonic);
   const triadNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].triad);
   const fullNotes = buildScale(state.key, SCALE_INTERVALS[state.mode].full);
-
-  const ri = noteIndex(state.key);
-
-  function noteRow(notes) {
-    return notes.map(n => {
-      const isRoot = (noteIndex(n) === ri);
-      return `<span class="ref-note${isRoot ? ' root-note' : ''}">${n}</span>`;
-    }).join('');
-  }
-
   const modeName = state.mode === 'major' ? 'Major' : 'Minor';
 
   document.getElementById('theoryRef').innerHTML = `
@@ -778,10 +846,8 @@ function renderTheory() {
     <div class="ref-card">
       <h4>Current selection</h4>
       <div class="ref-note-row">${noteRow(scaleNotes)}</div>
-    </div>
-  `;
+    </div>`;
 
-  // Note list in sidebar
   document.getElementById('noteList').innerHTML = scaleNotes.map(n => {
     const isRoot = noteIndex(n) === ri;
     return `<span class="note-badge" style="${isRoot ? 'background:rgba(232,168,56,0.2);color:var(--A)' : ''}">${n}</span>`;
@@ -811,29 +877,27 @@ DISPLAY_KEYS.forEach(k => {
   keyGrid.appendChild(btn);
 });
 
-// Major/Minor toggle
-document.getElementById('btnMajor').onclick = () => {
-  state.mode = 'major';
-  document.getElementById('btnMajor').classList.add('active');
-  document.getElementById('btnMinor').classList.remove('active');
+// Mode toggle
+function setMode(mode) {
+  state.mode = mode;
+  if (mode === 'metal') {
+    state.scale = 'harmonic';
+  } else if (mode === 'major') {
+    state.scale = 'pentatonic';
+  } else {
+    state.scale = 'pentatonic';
+  }
+  document.querySelectorAll('.mode-toggle button').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+  renderScaleToggle();
   render();
-};
-document.getElementById('btnMinor').onclick = () => {
-  state.mode = 'minor';
-  document.getElementById('btnMinor').classList.add('active');
-  document.getElementById('btnMajor').classList.remove('active');
-  render();
-};
+}
+document.getElementById('btnMajor').onclick = () => setMode('major');
+document.getElementById('btnMinor').onclick = () => setMode('minor');
+document.getElementById('btnMetal').onclick = () => setMode('metal');
 
-// Scale type
-document.querySelectorAll('.scale-btn').forEach(btn => {
-  btn.onclick = () => {
-    state.scale = btn.dataset.scale;
-    document.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    render();
-  };
-});
+// Initial scale toggle render
+renderScaleToggle();
 
 // Shape filter
 document.querySelectorAll('.shape-pill').forEach(pill => {
