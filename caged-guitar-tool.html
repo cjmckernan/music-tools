@@ -365,8 +365,18 @@
     font-family: 'Instrument Serif', serif;
     font-size: 2.2rem;
     font-style: italic;
-    margin-bottom: 4px;
+    margin-bottom: 2px;
     line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.4rem;
+  }
+  .pos-card-num {
+    font-size: 0.75rem;
+    font-style: normal;
+    font-family: 'Space Mono', monospace;
+    opacity: 0.5;
+    letter-spacing: 0.05em;
   }
   .pos-card[data-shape="A"] .pos-card-shape { color: var(--A); }
   .pos-card[data-shape="G"] .pos-card-shape { color: var(--G); }
@@ -493,11 +503,11 @@
     <div>
       <div class="section-label">Highlight Shape</div>
       <div class="shape-filter" id="shapeFilter">
-        <button class="shape-pill active" data-shape="A">A</button>
-        <button class="shape-pill active" data-shape="G">G</button>
-        <button class="shape-pill active" data-shape="E">E</button>
-        <button class="shape-pill active" data-shape="D">D</button>
-        <button class="shape-pill active" data-shape="C">C</button>
+        <button class="shape-pill active" data-shape="E">1·E</button>
+        <button class="shape-pill active" data-shape="D">2·D</button>
+        <button class="shape-pill active" data-shape="C">3·C</button>
+        <button class="shape-pill active" data-shape="A">4·A</button>
+        <button class="shape-pill active" data-shape="G">5·G</button>
       </div>
     </div>
 
@@ -515,11 +525,11 @@
           <span>● Coloured dot = scale note</span>
           <span>◉ Ring = root note</span>
           <span style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
-            <span style="color:var(--A)">■ A shape</span>
-            <span style="color:var(--G)">■ G shape</span>
-            <span style="color:var(--E)">■ E shape</span>
-            <span style="color:var(--D)">■ D shape</span>
-            <span style="color:var(--C)">■ C shape</span>
+            <span style="color:var(--E)">■ 1·E</span>
+            <span style="color:var(--D)">■ 2·D</span>
+            <span style="color:var(--C)">■ 3·C</span>
+            <span style="color:var(--A)">■ 4·A</span>
+            <span style="color:var(--G)">■ 5·G</span>
           </span>
         </div>
       </div>
@@ -592,6 +602,9 @@ const METAL_SCALES = {
 
 // Open string notes: E2 A2 D3 G3 B3 E4
 const OPEN_STRINGS = ['E','B','G','D','A','E']; // high to low for display
+
+// Position numbers: most common modern convention
+const POSITION_NUMBER = { E: 1, D: 2, C: 3, A: 4, G: 5 };
 
 // CAGED shape definitions: fret window relative to root fret
 const CAGED_SHAPES = {
@@ -747,14 +760,15 @@ function renderPositions() {
   const grid = document.getElementById('positionsGrid');
 
   // Update section label with fret-sorted order
-  const orderStr = positions.map(p => p.shape).join(' → ');
+  const orderStr = positions.map(p => `${p.shape}(${POSITION_NUMBER[p.shape]})`).join(' → ');
   document.getElementById('positionsLabel').textContent = `5 Positions across the neck — ${orderStr}`;
 
   grid.innerHTML = positions.map(({ shape, fret }) => {
     const dimmed = !state.activeShapes.has(shape) ? ' dimmed' : '';
+    const posNum = POSITION_NUMBER[shape];
     return `
       <div class="pos-card${dimmed}" data-shape="${shape}">
-        <div class="pos-card-shape">${shape}</div>
+        <div class="pos-card-shape">${shape}<span class="pos-card-num">pos.${posNum}</span></div>
         <div class="pos-card-fret">${fretLabel(fret)}</div>
         <div class="pos-card-root">${rootStringLabel(shape)}</div>
       </div>`;
