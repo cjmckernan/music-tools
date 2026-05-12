@@ -397,6 +397,13 @@
     margin-top: 4px;
     line-height: 1.5;
   }
+  .pos-card-diagram {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
 
   /* ── SCALE REFERENCE ── */
   .scale-ref {
@@ -754,6 +761,63 @@ function renderNeck() {
   document.getElementById('neckLabel').textContent = neckLabel;
 }
 
+// ─── MINI NECK DIAGRAM ───────────────────────────────────────────
+function renderMiniNeck(shape, rootFret, pentatonicNotes) {
+  const range = CAGED_SHAPES[shape].range;
+  const startFret = rootFret + range[0];
+  const numRows = range[1] - range[0] + 1; // fret spaces to show
+
+  const SS = 11;  // string spacing
+  const FS = 14;  // fret spacing
+  const PL = 16;  // pad left (for fret number label)
+  const PT = 8;   // pad top
+  const PR = 6;   // pad right
+  const PB = 4;   // pad bottom
+
+  const w = PL + 5 * SS + PR;
+  const h = PT + numRows * FS + PB;
+  const color = `var(--${shape})`;
+  const strX = s => PL + (5 - s) * SS; // s=5(low E)=left, s=0(high e)=right
+  const stringOpen = [4, 11, 7, 2, 9, 4]; // high e, B, G, D, A, low E semitones
+
+  let d = `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+
+  // Fret bars
+  for (let i = 0; i <= numRows; i++) {
+    const y = PT + i * FS;
+    const isNut = i === 0 && startFret === 0;
+    d += `<line x1="${PL}" y1="${y}" x2="${PL + 5*SS}" y2="${y}" stroke="${isNut ? 'rgba(255,255,255,0.5)' : 'rgba(255,255,255,0.15)'}" stroke-width="${isNut ? 3 : 1}"/>`;
+  }
+  // String lines
+  for (let s = 0; s < 6; s++) {
+    d += `<line x1="${strX(s)}" y1="${PT}" x2="${strX(s)}" y2="${PT + numRows * FS}" stroke="rgba(255,255,255,0.15)" stroke-width="1"/>`;
+  }
+  // Fret number label (top-left)
+  if (startFret > 0) {
+    d += `<text x="${PL - 8}" y="${PT + FS / 2 + 3}" text-anchor="middle" font-family="Space Mono,monospace" font-size="7" fill="rgba(255,255,255,0.25)">${startFret}</text>`;
+  }
+
+  // Dots: row 0 = startFret, row 1 = startFret+1, etc.
+  for (let s = 0; s < 6; s++) {
+    for (let row = 0; row < numRows; row++) {
+      const fret = startFret + row;
+      const semi = (stringOpen[s] + fret) % 12;
+      const note = NOTES[semi];
+      if (!pentatonicNotes.includes(note)) continue;
+
+      const x = strX(s);
+      const y = PT + row * FS + FS / 2;
+      const isRoot = semi === noteIndex(state.key);
+      const r = isRoot ? 5 : 4;
+      d += `<circle cx="${x}" cy="${y}" r="${r}" fill="${color}"/>`;
+      if (isRoot) d += `<circle cx="${x}" cy="${y}" r="${r + 2}" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>`;
+    }
+  }
+
+  d += '</svg>';
+  return d;
+}
+
 // ─── RENDER POSITIONS ─────────────────────────────────────────────
 function renderPositions() {
   const positions = getPositions(); // already sorted by fret ascending
@@ -763,6 +827,10 @@ function renderPositions() {
   const orderStr = positions.map(p => `${p.shape}(${POSITION_NUMBER[p.shape]})`).join(' → ');
   document.getElementById('positionsLabel').textContent = `5 Positions across the neck — ${orderStr}`;
 
+  // Pentatonic notes for the diagrams — always show minor penta in metal mode
+  const pentaMode = state.mode === 'major' ? 'major' : 'minor';
+  const pentaNotes = buildScale(state.key, SCALE_INTERVALS[pentaMode].pentatonic);
+
   grid.innerHTML = positions.map(({ shape, fret }) => {
     const dimmed = !state.activeShapes.has(shape) ? ' dimmed' : '';
     const posNum = POSITION_NUMBER[shape];
@@ -771,6 +839,7 @@ function renderPositions() {
         <div class="pos-card-shape">${shape}<span class="pos-card-num">pos.${posNum}</span></div>
         <div class="pos-card-fret">${fretLabel(fret)}</div>
         <div class="pos-card-root">${rootStringLabel(shape)}</div>
+        <div class="pos-card-diagram">${renderMiniNeck(shape, fret, pentaNotes)}</div>
       </div>`;
   }).join('');
 }
