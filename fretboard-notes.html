@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fretboard Notes — Reference</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M32 4C22 4 16 12 14 20c-2 8-1 16 2 24s8 12 16 12 13-4 16-12 4-16 2-24C48 12 42 4 32 4z' fill='%23e8a838'/%3E%3Ctext x='32' y='42' text-anchor='middle' font-family='Georgia,serif' font-size='26' font-style='italic' fill='%231a0f00'%3EC%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0e;
+    --bg2: #161616;
+    --bg3: #1e1e1e;
+    --border: rgba(255,255,255,0.08);
+    --text: #f0ece4;
+    --muted: #888;
+    --accent: #e8a838;
+    --natural-col: #f0ece4;
+    --sharp-col: #888;
+    --highlight: #e8a838;
+    --highlight-bg: rgba(232,168,56,0.18);
+    --marker: rgba(255,255,255,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Space Mono', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HEADER ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2.5rem 1.5rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    font-family: 'Instrument Serif', serif;
+    font-size: 2.8rem;
+    letter-spacing: -1px;
+    line-height: 1;
+  }
+  .logo span { font-style: italic; color: var(--accent); }
+
+  .subtitle {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  .nav-links { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
+
+  .nav-link {
+    font-size: 0.7rem;
+    color: var(--muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .nav-link:hover { color: var(--text); }
+
+  /* ── CONTROLS BAR ── */
+  .controls {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+  }
+
+  .controls-inner {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .ctrl-label {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+
+  /* Note picker */
+  .note-picker {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+    flex: 1;
+  }
+
+  .note-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 36px;
+    text-align: center;
+  }
+  .note-chip:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+  .note-chip.active {
+    background: var(--highlight-bg);
+    color: var(--highlight);
+    border-color: rgba(232,168,56,0.4);
+    font-weight: 700;
+  }
+  .note-chip.natural { color: var(--text); }
+  .note-chip.natural:not(.active) { color: rgba(240,236,228,0.7); }
+
+  /* Accidental toggle */
+  .acc-toggle {
+    display: flex;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .acc-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    padding: 6px 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .acc-btn.active { background: var(--bg3); color: var(--text); }
+
+  /* ── CONTENT ── */
+  .content {
+    padding: 2rem 2.5rem 4rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* ── FRETBOARD ── */
+  .fretboard-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 2rem;
+  }
+
+  .fretboard {
+    min-width: 700px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg2);
+  }
+
+  .fb-row {
+    display: grid;
+    grid-template-columns: 48px repeat(13, 1fr);
+    border-bottom: 1px solid var(--border);
+  }
+  .fb-row:last-child { border-bottom: none; }
+
+  .fb-string-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 6px;
+    border-right: 1px solid var(--border);
+    background: var(--bg3);
+    gap: 2px;
+  }
+  .fb-string-name {
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  .fb-string-num {
+    font-size: 0.55rem;
+    color: var(--muted);
+  }
+
+  .fb-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 2px;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.1s;
+    position: relative;
+    min-height: 44px;
+  }
+  .fb-cell:last-child { border-right: none; }
+
+  /* Fret dot marker columns */
+  .fb-cell.dot-fret { background: rgba(255,255,255,0.02); }
+
+  .fb-note {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-align: center;
+    transition: all 0.15s;
+    border-radius: 4px;
+    padding: 3px 4px;
+    line-height: 1.1;
+  }
+
+  .fb-note.is-natural { color: var(--natural-col); }
+  .fb-note.is-sharp { color: var(--sharp-col); font-weight: 400; }
+  .fb-note.is-open { color: var(--accent); }
+
+  /* Highlighted state */
+  .fb-cell.highlighted .fb-note {
+    color: var(--highlight);
+    background: var(--highlight-bg);
+  }
+  /* Dimmed state when something else is highlighted */
+  .fb-cell.dimmed .fb-note {
+    color: rgba(255,255,255,0.1);
+  }
+
+  /* Fret numbers row */
+  .fret-num-row .fb-cell {
+    background: var(--bg3);
+    cursor: default;
+    min-height: 32px;
+  }
+  .fret-num-row .fb-cell:not(:last-child) {
+    border-right: 1px solid var(--border);
+  }
+  .fret-num {
+    font-size: 0.65rem;
+    color: var(--muted);
+  }
+  .fret-num.is-marker { color: var(--text); }
+
+  /* Fret dots row */
+  .fret-dots-row .fb-cell {
+    background: var(--bg);
+    cursor: default;
+    min-height: 24px;
+  }
+  .dot-marker {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+  }
+  .dot-marker.double { background: transparent; }
+  .double-dots {
+    display: flex;
+    gap: 3px;
+  }
+  .double-dots span {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+  }
+
+  /* ── ENHARMONIC KEY ── */
+  .key-section {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    margin-bottom: 2rem;
+  }
+  .key-title {
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+  }
+  .key-grid {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  .key-item {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 5px 10px;
+    font-size: 0.7rem;
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .key-item .nat { color: var(--text); font-weight: 700; }
+  .key-item .enhar { color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 1rem 2.5rem;
+    font-size: 0.65rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    header { padding: 1.5rem; }
+    .controls { padding: 0.75rem 1.5rem; }
+    .content { padding: 1.5rem 1.5rem 3rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="logo">Fretboard <span>Notes</span></div>
+    <div class="subtitle">All notes — every string — frets 0 to 12</div>
+  </div>
+  <div class="nav-links">
+    <a href="caged-guitar-tool.html" class="nav-link">&larr; CAGED Tool</a>
+    <a href="barre-chords.html" class="nav-link">Barre Chords</a>
+    <a href="power-chords.html" class="nav-link">Power Chords</a>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="controls-inner">
+    <div class="ctrl-label">Highlight note</div>
+    <div class="note-picker" id="notePicker"></div>
+    <div class="acc-toggle">
+      <button class="acc-btn active" id="btnSharps">#</button>
+      <button class="acc-btn" id="btnFlats">b</button>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="fretboard-wrap">
+    <div class="fretboard" id="fretboard"></div>
+  </div>
+
+  <div class="key-section">
+    <div class="key-title">Enharmonic equivalents</div>
+    <div class="key-grid">
+      <div class="key-item"><span class="nat">C#</span><span class="enhar">= Db</span></div>
+      <div class="key-item"><span class="nat">D#</span><span class="enhar">= Eb</span></div>
+      <div class="key-item"><span class="nat">F#</span><span class="enhar">= Gb</span></div>
+      <div class="key-item"><span class="nat">G#</span><span class="enhar">= Ab</span></div>
+      <div class="key-item"><span class="nat">A#</span><span class="enhar">= Bb</span></div>
+      <div class="key-item" style="margin-left:auto"><span class="enhar">No sharps/flats:</span><span class="nat" style="font-weight:400"> E–F, B–C</span></div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Fretboard Notes</span>
+  <span>Fret 12 = fret 0 (one octave up)</span>
+</footer>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────
+const SHARPS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FLATS  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const NATURALS = new Set([0,2,4,5,7,9,11]); // C D E F G A B
+const DOT_FRETS = new Set([3,5,7,9,12]);
+const DOUBLE_FRET = 12;
+
+// Strings: display order top to bottom = high e → low E
+// [name, display-num, open-semitone]
+const STRINGS = [
+  ['e', '1st', 4],
+  ['B', '2nd', 11],
+  ['G', '3rd', 7],
+  ['D', '4th', 2],
+  ['A', '5th', 9],
+  ['E', '6th', 4],
+];
+
+let useFlats = false;
+let activeNote = null; // semitone index, or null
+
+function noteName(semi) {
+  return useFlats ? FLATS[semi] : SHARPS[semi];
+}
+
+function isNatural(semi) { return NATURALS.has(semi); }
+
+// ─── BUILD FRETBOARD ─────────────────────────────────────────────
+function buildFretboard() {
+  const fb = document.getElementById('fretboard');
+
+  // Fret number header row
+  let html = `<div class="fb-row fret-num-row">
+    <div class="fb-string-label" style="background:var(--bg3)"></div>`;
+  for (let f = 0; f <= 12; f++) {
+    const isM = DOT_FRETS.has(f);
+    html += `<div class="fb-cell"><span class="fret-num${isM ? ' is-marker' : ''}">${f}</span></div>`;
+  }
+  html += '</div>';
+
+  // String rows
+  STRINGS.forEach(([name, num, openSemi]) => {
+    html += `<div class="fb-row">
+      <div class="fb-string-label">
+        <span class="fb-string-name">${name}</span>
+        <span class="fb-string-num">${num}</span>
+      </div>`;
+    for (let f = 0; f <= 12; f++) {
+      const semi = (openSemi + f) % 12;
+      const nat = isNatural(semi);
+      const isDot = DOT_FRETS.has(f);
+      const noteClass = f === 0 ? 'is-open' : nat ? 'is-natural' : 'is-sharp';
+      html += `<div class="fb-cell${isDot ? ' dot-fret' : ''}" data-semi="${semi}" data-fret="${f}">
+        <span class="fb-note ${noteClass}">${noteName(semi)}</span>
+      </div>`;
+    }
+    html += '</div>';
+  });
+
+  // Fret dot markers row
+  html += `<div class="fb-row fret-dots-row">
+    <div class="fb-string-label" style="background:var(--bg)"></div>`;
+  for (let f = 0; f <= 12; f++) {
+    html += `<div class="fb-cell">`;
+    if (f === DOUBLE_FRET) {
+      html += `<div class="double-dots"><span></span><span></span></div>`;
+    } else if (DOT_FRETS.has(f)) {
+      html += `<div class="dot-marker"></div>`;
+    }
+    html += `</div>`;
+  }
+  html += '</div>';
+
+  fb.innerHTML = html;
+
+  // Click to highlight
+  fb.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
+    cell.addEventListener('click', () => {
+      const semi = parseInt(cell.dataset.semi);
+      activeNote = activeNote === semi ? null : semi;
+      updateHighlight();
+      updatePicker();
+    });
+  });
+}
+
+// ─── UPDATE NOTE NAMES ───────────────────────────────────────────
+function updateNoteNames() {
+  document.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
+    const semi = parseInt(cell.dataset.semi);
+    cell.querySelector('.fb-note').textContent = noteName(semi);
+  });
+  buildPicker();
+}
+
+// ─── HIGHLIGHT ───────────────────────────────────────────────────
+function updateHighlight() {
+  document.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
+    const semi = parseInt(cell.dataset.semi);
+    cell.classList.remove('highlighted', 'dimmed');
+    if (activeNote !== null) {
+      cell.classList.add(semi === activeNote ? 'highlighted' : 'dimmed');
+    }
+  });
+}
+
+// ─── NOTE PICKER ─────────────────────────────────────────────────
+function buildPicker() {
+  const picker = document.getElementById('notePicker');
+  const names = useFlats ? FLATS : SHARPS;
+
+  picker.innerHTML = [...new Set(names)].map((n, i) => {
+    // Get actual semitone for this display name
+    const semi = (useFlats ? FLATS : SHARPS).indexOf(n);
+    const nat = isNatural(semi);
+    const isActive = activeNote === semi;
+    return `<button class="note-chip${nat ? ' natural' : ''}${isActive ? ' active' : ''}" data-semi="${semi}">${n}</button>`;
+  }).join('');
+
+  picker.querySelectorAll('.note-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const semi = parseInt(btn.dataset.semi);
+      activeNote = activeNote === semi ? null : semi;
+      updateHighlight();
+      buildPicker();
+    });
+  });
+}
+
+// ─── ACCIDENTAL TOGGLE ───────────────────────────────────────────
+document.getElementById('btnSharps').addEventListener('click', () => {
+  useFlats = false;
+  document.getElementById('btnSharps').classList.add('active');
+  document.getElementById('btnFlats').classList.remove('active');
+  updateNoteNames();
+  updateHighlight();
+});
+
+document.getElementById('btnFlats').addEventListener('click', () => {
+  useFlats = true;
+  document.getElementById('btnFlats').classList.add('active');
+  document.getElementById('btnSharps').classList.remove('active');
+  updateNoteNames();
+  updateHighlight();
+});
+
+// ─── INIT ────────────────────────────────────────────────────────
+buildFretboard();
+buildPicker();
+</script>
+</body>
+</html>
