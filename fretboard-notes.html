@@ -15,22 +15,18 @@
     --text: #f0ece4;
     --muted: #888;
     --accent: #e8a838;
-    --natural-col: #f0ece4;
-    --sharp-col: #888;
-    --highlight: #e8a838;
-    --highlight-bg: rgba(232,168,56,0.18);
-    --marker: rgba(255,255,255,0.12);
+    --neck-bg: #0d0a07;
+    --fret-bar: rgba(180,165,130,0.28);
+    --nut: rgba(220,210,185,0.75);
+    --string-base: rgba(200,185,150,0.55);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  html { scroll-behavior: smooth; }
-
   body {
     background: var(--bg);
     color: var(--text);
     font-family: 'Space Mono', monospace;
     min-height: 100vh;
-    overflow-x: hidden;
   }
 
   /* ── HEADER ── */
@@ -43,270 +39,253 @@
     gap: 1rem;
     flex-wrap: wrap;
   }
-
-  .logo {
-    font-family: 'Instrument Serif', serif;
-    font-size: 2.8rem;
-    letter-spacing: -1px;
-    line-height: 1;
-  }
+  .logo { font-family: 'Instrument Serif', serif; font-size: 2.8rem; letter-spacing: -1px; line-height: 1; }
   .logo span { font-style: italic; color: var(--accent); }
-
-  .subtitle {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-top: 4px;
-  }
-
+  .subtitle { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px; }
   .nav-links { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
-
-  .nav-link {
-    font-size: 0.7rem;
-    color: var(--muted);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: color 0.15s;
-  }
+  .nav-link { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none; transition: color 0.15s; }
   .nav-link:hover { color: var(--text); }
 
-  /* ── CONTROLS BAR ── */
+  /* ── STICKY CONTROLS ── */
   .controls {
     position: sticky;
     top: 0;
     z-index: 100;
     background: var(--bg);
     border-bottom: 1px solid var(--border);
-    padding: 1rem 2.5rem;
-  }
-
-  .controls-inner {
+    padding: 0.85rem 2.5rem;
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
     flex-wrap: wrap;
   }
+  .ctrl-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); flex-shrink: 0; }
 
-  .ctrl-label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    flex-shrink: 0;
-  }
-
-  /* Note picker */
-  .note-picker {
-    display: flex;
-    gap: 4px;
-    flex-wrap: wrap;
-    flex: 1;
-  }
-
+  .note-picker { display: flex; gap: 5px; flex-wrap: wrap; flex: 1; }
   .note-chip {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    color: var(--muted);
-    font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    padding: 5px 10px;
-    cursor: pointer;
-    transition: all 0.15s;
-    min-width: 36px;
-    text-align: center;
-  }
-  .note-chip:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-  .note-chip.active {
-    background: var(--highlight-bg);
-    color: var(--highlight);
-    border-color: rgba(232,168,56,0.4);
-    font-weight: 700;
-  }
-  .note-chip.natural { color: var(--text); }
-  .note-chip.natural:not(.active) { color: rgba(240,236,228,0.7); }
-
-  /* Accidental toggle */
-  .acc-toggle {
-    display: flex;
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    overflow: hidden;
-    flex-shrink: 0;
-  }
-  .acc-btn {
     background: transparent;
-    border: none;
+    border: 1px solid var(--border);
+    border-radius: 999px;
     color: var(--muted);
     font-family: 'Space Mono', monospace;
-    font-size: 0.7rem;
-    padding: 6px 12px;
+    font-size: 0.68rem;
+    padding: 4px 11px;
     cursor: pointer;
     transition: all 0.15s;
   }
+  .note-chip.natural { color: rgba(240,236,228,0.75); border-color: rgba(255,255,255,0.12); }
+  .note-chip:hover { color: var(--text); border-color: rgba(255,255,255,0.25); }
+  .note-chip.active { background: rgba(232,168,56,0.2); color: var(--accent); border-color: rgba(232,168,56,0.5); font-weight: 700; }
+
+  .acc-toggle { display: flex; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; flex-shrink: 0; }
+  .acc-btn { background: transparent; border: none; color: var(--muted); font-family: 'Space Mono', monospace; font-size: 0.7rem; padding: 5px 11px; cursor: pointer; transition: all 0.15s; }
   .acc-btn.active { background: var(--bg3); color: var(--text); }
 
-  /* ── CONTENT ── */
-  .content {
-    padding: 2rem 2.5rem 4rem;
-    max-width: 1200px;
-    margin: 0 auto;
-  }
+  /* ── PAGE CONTENT ── */
+  .content { padding: 2rem 2.5rem 4rem; }
 
-  /* ── FRETBOARD ── */
-  .fretboard-wrap {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 2rem;
-  }
+  /* ── NECK ── */
+  .neck-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 
-  .fretboard {
-    min-width: 700px;
-    border: 1px solid var(--border);
+  .neck {
+    min-width: 760px;
+    background: var(--neck-bg);
     border-radius: 12px;
-    overflow: hidden;
-    background: var(--bg2);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 1rem 0 0.75rem;
+    position: relative;
   }
 
-  .fb-row {
-    display: grid;
-    grid-template-columns: 48px repeat(13, 1fr);
-    border-bottom: 1px solid var(--border);
+  /* Fret number row */
+  .fret-num-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
   }
-  .fb-row:last-child { border-bottom: none; }
+  .str-label-col { width: 54px; flex-shrink: 0; }
+  .open-col { width: 52px; flex-shrink: 0; display: flex; justify-content: center; }
+  .nut-col { width: 10px; flex-shrink: 0; }
+  .fret-col {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid var(--fret-bar);
+    min-width: 52px;
+  }
+  .fret-col:last-child { border-right: none; }
 
-  .fb-string-label {
+  .fret-num-label {
+    font-size: 0.6rem;
+    color: var(--muted);
+  }
+  .fret-num-label.is-marker { color: rgba(200,185,150,0.8); }
+
+  /* String rows */
+  .string-row {
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 52px;
+  }
+
+  /* The string line — runs from after the label through all fret columns */
+  .string-line {
+    position: absolute;
+    top: 50%;
+    left: 54px;   /* start after str-label-col */
+    right: 0;
+    transform: translateY(-50%);
+    pointer-events: none;
+    border-radius: 999px;
+  }
+
+  /* Per-string thickness & color via inline style */
+
+  /* String label */
+  .str-label {
+    width: 54px;
+    flex-shrink: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 10px 6px;
-    border-right: 1px solid var(--border);
-    background: var(--bg3);
-    gap: 2px;
+    gap: 1px;
+    position: relative;
+    z-index: 2;
   }
-  .fb-string-name {
-    font-size: 0.75rem;
-    font-weight: 700;
-  }
-  .fb-string-num {
-    font-size: 0.55rem;
-    color: var(--muted);
+  .str-name { font-size: 0.8rem; font-weight: 700; }
+  .str-num { font-size: 0.55rem; color: var(--muted); }
+
+  /* Open string column (fret 0, before nut) */
+  .open-fret-col {
+    width: 52px;
+    flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
   }
 
-  .fb-cell {
+  /* Nut */
+  .nut-bar {
+    width: 10px;
+    flex-shrink: 0;
+    align-self: stretch;
+    background: var(--nut);
+    border-radius: 2px;
+    position: relative;
+    z-index: 2;
+    opacity: 0.85;
+  }
+
+  /* Fret columns */
+  .fret-note-col {
+    flex: 1;
+    min-width: 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 2;
+    border-right: 1px solid var(--fret-bar);
+  }
+  .fret-note-col:last-child { border-right: none; }
+
+  /* Note dot — the actual circle */
+  .note-dot {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--neck-bg);
+    border: 1px solid rgba(255,255,255,0.1);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 2px;
-    border-right: 1px solid var(--border);
     cursor: pointer;
-    transition: background 0.1s;
-    position: relative;
-    min-height: 44px;
-  }
-  .fb-cell:last-child { border-right: none; }
-
-  /* Fret dot marker columns */
-  .fb-cell.dot-fret { background: rgba(255,255,255,0.02); }
-
-  .fb-note {
-    font-size: 0.72rem;
-    font-weight: 700;
-    text-align: center;
     transition: all 0.15s;
-    border-radius: 4px;
-    padding: 3px 4px;
-    line-height: 1.1;
+    flex-shrink: 0;
+    position: relative;
   }
+  .note-dot:hover { border-color: rgba(255,255,255,0.3); }
 
-  .fb-note.is-natural { color: var(--natural-col); }
-  .fb-note.is-sharp { color: var(--sharp-col); font-weight: 400; }
-  .fb-note.is-open { color: var(--accent); }
-
-  /* Highlighted state */
-  .fb-cell.highlighted .fb-note {
-    color: var(--highlight);
-    background: var(--highlight-bg);
-  }
-  /* Dimmed state when something else is highlighted */
-  .fb-cell.dimmed .fb-note {
-    color: rgba(255,255,255,0.1);
-  }
-
-  /* Fret numbers row */
-  .fret-num-row .fb-cell {
-    background: var(--bg3);
-    cursor: default;
-    min-height: 32px;
-  }
-  .fret-num-row .fb-cell:not(:last-child) {
-    border-right: 1px solid var(--border);
-  }
-  .fret-num {
-    font-size: 0.65rem;
-    color: var(--muted);
-  }
-  .fret-num.is-marker { color: var(--text); }
-
-  /* Fret dots row */
-  .fret-dots-row .fb-cell {
-    background: var(--bg);
-    cursor: default;
-    min-height: 24px;
-  }
-  .dot-marker {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.18);
-  }
-  .dot-marker.double { background: transparent; }
-  .double-dots {
-    display: flex;
-    gap: 3px;
-  }
-  .double-dots span {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.25);
-  }
-
-  /* ── ENHARMONIC KEY ── */
-  .key-section {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1.25rem;
-    margin-bottom: 2rem;
-  }
-  .key-title {
+  .note-text {
     font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.75rem;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    transition: color 0.15s;
+    letter-spacing: -0.02em;
   }
-  .key-grid {
+
+  /* Natural vs accidental */
+  .note-dot.is-natural .note-text { color: rgba(240,236,228,0.9); }
+  .note-dot.is-accidental .note-text { color: var(--muted); }
+  .note-dot.is-open { border-color: rgba(232,168,56,0.3); }
+  .note-dot.is-open .note-text { color: rgba(232,168,56,0.9); }
+
+  /* Highlighted */
+  .note-dot.highlighted {
+    background: rgba(232,168,56,0.22);
+    border-color: rgba(232,168,56,0.7);
+    box-shadow: 0 0 8px rgba(232,168,56,0.25);
+  }
+  .note-dot.highlighted .note-text { color: var(--accent); }
+
+  /* Dimmed when something else is active */
+  .note-dot.dimmed {
+    opacity: 0.2;
+  }
+
+  /* Fret position dot markers row */
+  .fret-markers-row {
+    display: flex;
+    align-items: center;
+    margin-top: 2px;
+    padding-top: 4px;
+  }
+  .marker-space { width: 54px; flex-shrink: 0; }
+  .marker-open { width: 52px; flex-shrink: 0; }
+  .marker-nut { width: 10px; flex-shrink: 0; }
+  .marker-col {
+    flex: 1;
+    min-width: 52px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20px;
+  }
+  .fret-inlay {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: rgba(200,185,150,0.2);
+  }
+  .fret-inlay.double {
+    display: flex; gap: 5px; background: transparent; width: auto; height: auto;
+  }
+  .fret-inlay.double span {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(200,185,150,0.25);
+  }
+
+  /* ── ENHARMONICS ── */
+  .enhar-row {
     display: flex;
     gap: 6px;
     flex-wrap: wrap;
-  }
-  .key-item {
-    background: var(--bg3);
-    border: 1px solid var(--border);
-    border-radius: 5px;
-    padding: 5px 10px;
-    font-size: 0.7rem;
-    display: flex;
-    gap: 6px;
+    margin-top: 1.5rem;
     align-items: center;
   }
-  .key-item .nat { color: var(--text); font-weight: 700; }
-  .key-item .enhar { color: var(--muted); }
+  .enhar-label { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+  .enhar-item {
+    font-size: 0.7rem;
+    color: var(--muted);
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+  }
+  .enhar-item b { color: rgba(240,236,228,0.7); font-weight: 700; }
 
   /* ── FOOTER ── */
   footer {
@@ -320,7 +299,6 @@
     text-transform: uppercase;
   }
 
-  /* ── RESPONSIVE ── */
   @media (max-width: 700px) {
     header { padding: 1.5rem; }
     .controls { padding: 0.75rem 1.5rem; }
@@ -333,7 +311,7 @@
 <header>
   <div>
     <div class="logo">Fretboard <span>Notes</span></div>
-    <div class="subtitle">All notes — every string — frets 0 to 12</div>
+    <div class="subtitle">All notes — frets 0 to 12</div>
   </div>
   <div class="nav-links">
     <a href="caged-guitar-tool.html" class="nav-link">&larr; CAGED Tool</a>
@@ -343,188 +321,205 @@
 </header>
 
 <div class="controls">
-  <div class="controls-inner">
-    <div class="ctrl-label">Highlight note</div>
-    <div class="note-picker" id="notePicker"></div>
-    <div class="acc-toggle">
-      <button class="acc-btn active" id="btnSharps">#</button>
-      <button class="acc-btn" id="btnFlats">b</button>
-    </div>
+  <span class="ctrl-label">Highlight</span>
+  <div class="note-picker" id="notePicker"></div>
+  <div class="acc-toggle">
+    <button class="acc-btn active" id="btnSharps">#</button>
+    <button class="acc-btn" id="btnFlats">b</button>
   </div>
 </div>
 
 <div class="content">
-  <div class="fretboard-wrap">
-    <div class="fretboard" id="fretboard"></div>
+  <div class="neck-scroll">
+    <div class="neck" id="neck"></div>
   </div>
 
-  <div class="key-section">
-    <div class="key-title">Enharmonic equivalents</div>
-    <div class="key-grid">
-      <div class="key-item"><span class="nat">C#</span><span class="enhar">= Db</span></div>
-      <div class="key-item"><span class="nat">D#</span><span class="enhar">= Eb</span></div>
-      <div class="key-item"><span class="nat">F#</span><span class="enhar">= Gb</span></div>
-      <div class="key-item"><span class="nat">G#</span><span class="enhar">= Ab</span></div>
-      <div class="key-item"><span class="nat">A#</span><span class="enhar">= Bb</span></div>
-      <div class="key-item" style="margin-left:auto"><span class="enhar">No sharps/flats:</span><span class="nat" style="font-weight:400"> E–F, B–C</span></div>
-    </div>
+  <div class="enhar-row">
+    <span class="enhar-label">Enharmonics</span>
+    <span class="enhar-item"><b>C#</b> = Db</span>
+    <span class="enhar-item"><b>D#</b> = Eb</span>
+    <span class="enhar-item"><b>F#</b> = Gb</span>
+    <span class="enhar-item"><b>G#</b> = Ab</span>
+    <span class="enhar-item"><b>A#</b> = Bb</span>
+    <span class="enhar-item" style="margin-left:8px;color:rgba(240,236,228,0.4)">E–F and B–C have no sharp between them</span>
   </div>
 </div>
 
 <footer>
   <span>Fretboard Notes</span>
-  <span>Fret 12 = fret 0 (one octave up)</span>
+  <span>Fret 12 = fret 0 one octave up</span>
 </footer>
 
 <script>
-// ─── DATA ───────────────────────────────────────────────────────
-const SHARPS = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
-const FLATS  = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
-const NATURALS = new Set([0,2,4,5,7,9,11]); // C D E F G A B
+const SHARPS  = ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+const FLATS   = ['C','Db','D','Eb','E','F','Gb','G','Ab','A','Bb','B'];
+const NATURALS = new Set([0,2,4,5,7,9,11]);
 const DOT_FRETS = new Set([3,5,7,9,12]);
-const DOUBLE_FRET = 12;
 
-// Strings: display order top to bottom = high e → low E
-// [name, display-num, open-semitone]
+// Strings: display order high→low, [label, ordinal, open-semitone, string-thickness, string-opacity]
 const STRINGS = [
-  ['e', '1st', 4],
-  ['B', '2nd', 11],
-  ['G', '3rd', 7],
-  ['D', '4th', 2],
-  ['A', '5th', 9],
-  ['E', '6th', 4],
+  ['e', '1st', 4,  1.0, 0.45],
+  ['B', '2nd', 11, 1.4, 0.5],
+  ['G', '3rd', 7,  1.8, 0.55],
+  ['D', '4th', 2,  2.3, 0.6],
+  ['A', '5th', 9,  2.9, 0.62],
+  ['E', '6th', 4,  3.6, 0.65],
 ];
 
 let useFlats = false;
-let activeNote = null; // semitone index, or null
+let activeNote = null;
 
-function noteName(semi) {
-  return useFlats ? FLATS[semi] : SHARPS[semi];
-}
-
+function noteName(semi) { return (useFlats ? FLATS : SHARPS)[semi]; }
 function isNatural(semi) { return NATURALS.has(semi); }
 
-// ─── BUILD FRETBOARD ─────────────────────────────────────────────
-function buildFretboard() {
-  const fb = document.getElementById('fretboard');
+// ── BUILD NECK ──────────────────────────────────────────────────
+function buildNeck() {
+  const neck = document.getElementById('neck');
 
-  // Fret number header row
-  let html = `<div class="fb-row fret-num-row">
-    <div class="fb-string-label" style="background:var(--bg3)"></div>`;
-  for (let f = 0; f <= 12; f++) {
+  // Fret number header
+  let html = `<div class="fret-num-row">
+    <div class="str-label-col"></div>
+    <div class="open-col"><span class="fret-num-label is-marker">0</span></div>
+    <div class="nut-col"></div>`;
+  for (let f = 1; f <= 12; f++) {
     const isM = DOT_FRETS.has(f);
-    html += `<div class="fb-cell"><span class="fret-num${isM ? ' is-marker' : ''}">${f}</span></div>`;
+    html += `<div class="fret-col"><span class="fret-num-label${isM ? ' is-marker' : ''}">${f}</span></div>`;
   }
   html += '</div>';
 
   // String rows
-  STRINGS.forEach(([name, num, openSemi]) => {
-    html += `<div class="fb-row">
-      <div class="fb-string-label">
-        <span class="fb-string-name">${name}</span>
-        <span class="fb-string-num">${num}</span>
+  STRINGS.forEach(([name, num, openSemi, thickness, opacity]) => {
+    const stringColor = `rgba(200,185,148,${opacity})`;
+    html += `<div class="string-row">
+      <div class="string-line" style="height:${thickness}px;background:${stringColor}"></div>
+      <div class="str-label">
+        <span class="str-name">${name}</span>
+        <span class="str-num">${num}</span>
       </div>`;
-    for (let f = 0; f <= 12; f++) {
+
+    // Open string (fret 0)
+    const openClass = `is-open${activeNote === openSemi ? ' highlighted' : activeNote !== null ? ' dimmed' : ''}`;
+    html += `<div class="open-fret-col">
+      <div class="note-dot ${openClass}" data-semi="${openSemi}" data-fret="0">
+        <span class="note-text">${noteName(openSemi)}</span>
+      </div>
+    </div>`;
+
+    // Nut
+    html += `<div class="nut-bar"></div>`;
+
+    // Frets 1–12
+    for (let f = 1; f <= 12; f++) {
       const semi = (openSemi + f) % 12;
       const nat = isNatural(semi);
-      const isDot = DOT_FRETS.has(f);
-      const noteClass = f === 0 ? 'is-open' : nat ? 'is-natural' : 'is-sharp';
-      html += `<div class="fb-cell${isDot ? ' dot-fret' : ''}" data-semi="${semi}" data-fret="${f}">
-        <span class="fb-note ${noteClass}">${noteName(semi)}</span>
+      const typeClass = nat ? 'is-natural' : 'is-accidental';
+      const stateClass = activeNote === semi ? ' highlighted' : activeNote !== null ? ' dimmed' : '';
+      html += `<div class="fret-note-col">
+        <div class="note-dot ${typeClass}${stateClass}" data-semi="${semi}" data-fret="${f}">
+          <span class="note-text">${noteName(semi)}</span>
+        </div>
       </div>`;
     }
-    html += '</div>';
+
+    html += '</div>'; // string-row
   });
 
-  // Fret dot markers row
-  html += `<div class="fb-row fret-dots-row">
-    <div class="fb-string-label" style="background:var(--bg)"></div>`;
-  for (let f = 0; f <= 12; f++) {
-    html += `<div class="fb-cell">`;
-    if (f === DOUBLE_FRET) {
-      html += `<div class="double-dots"><span></span><span></span></div>`;
+  // Fret marker dots row
+  html += `<div class="fret-markers-row">
+    <div class="marker-space"></div>
+    <div class="marker-open"></div>
+    <div class="marker-nut"></div>`;
+  for (let f = 1; f <= 12; f++) {
+    html += `<div class="marker-col">`;
+    if (f === 12) {
+      html += `<div class="fret-inlay double"><span></span><span></span></div>`;
     } else if (DOT_FRETS.has(f)) {
-      html += `<div class="dot-marker"></div>`;
+      html += `<div class="fret-inlay"></div>`;
     }
     html += `</div>`;
   }
   html += '</div>';
 
-  fb.innerHTML = html;
+  neck.innerHTML = html;
 
-  // Click to highlight
-  fb.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
-    cell.addEventListener('click', () => {
-      const semi = parseInt(cell.dataset.semi);
-      activeNote = activeNote === semi ? null : semi;
-      updateHighlight();
-      updatePicker();
-    });
-  });
-}
-
-// ─── UPDATE NOTE NAMES ───────────────────────────────────────────
-function updateNoteNames() {
-  document.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
-    const semi = parseInt(cell.dataset.semi);
-    cell.querySelector('.fb-note').textContent = noteName(semi);
-  });
-  buildPicker();
-}
-
-// ─── HIGHLIGHT ───────────────────────────────────────────────────
-function updateHighlight() {
-  document.querySelectorAll('.fb-cell[data-semi]').forEach(cell => {
-    const semi = parseInt(cell.dataset.semi);
-    cell.classList.remove('highlighted', 'dimmed');
-    if (activeNote !== null) {
-      cell.classList.add(semi === activeNote ? 'highlighted' : 'dimmed');
-    }
-  });
-}
-
-// ─── NOTE PICKER ─────────────────────────────────────────────────
-function buildPicker() {
-  const picker = document.getElementById('notePicker');
-  const names = useFlats ? FLATS : SHARPS;
-
-  picker.innerHTML = [...new Set(names)].map((n, i) => {
-    // Get actual semitone for this display name
-    const semi = (useFlats ? FLATS : SHARPS).indexOf(n);
-    const nat = isNatural(semi);
-    const isActive = activeNote === semi;
-    return `<button class="note-chip${nat ? ' natural' : ''}${isActive ? ' active' : ''}" data-semi="${semi}">${n}</button>`;
-  }).join('');
-
-  picker.querySelectorAll('.note-chip').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const semi = parseInt(btn.dataset.semi);
-      activeNote = activeNote === semi ? null : semi;
-      updateHighlight();
+  // Click handlers on dots
+  neck.querySelectorAll('.note-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const semi = parseInt(dot.dataset.semi);
+      activeNote = (activeNote === semi) ? null : semi;
+      refreshDots();
       buildPicker();
     });
   });
 }
 
-// ─── ACCIDENTAL TOGGLE ───────────────────────────────────────────
+// ── REFRESH DOT STATES ──────────────────────────────────────────
+function refreshDots() {
+  document.querySelectorAll('.note-dot').forEach(dot => {
+    const semi = parseInt(dot.dataset.semi);
+    const fret = parseInt(dot.dataset.fret);
+    dot.classList.remove('highlighted', 'dimmed');
+    if (activeNote !== null) {
+      dot.classList.add(semi === activeNote ? 'highlighted' : 'dimmed');
+    }
+    // Restore open class
+    if (fret === 0) {
+      dot.classList.add('is-open');
+      dot.classList.remove('is-natural', 'is-accidental');
+    }
+  });
+}
+
+// ── UPDATE NOTE TEXT ────────────────────────────────────────────
+function refreshNoteText() {
+  document.querySelectorAll('.note-dot').forEach(dot => {
+    const semi = parseInt(dot.dataset.semi);
+    dot.querySelector('.note-text').textContent = noteName(semi);
+  });
+  buildPicker();
+}
+
+// ── PICKER ──────────────────────────────────────────────────────
+function buildPicker() {
+  const picker = document.getElementById('notePicker');
+  const names = useFlats ? FLATS : SHARPS;
+  // Deduplicate (Flats/Sharps have 12 unique entries)
+  const seen = new Set();
+  const items = [];
+  names.forEach((n, i) => { if (!seen.has(i)) { seen.add(i); items.push([n, i]); } });
+
+  picker.innerHTML = items.map(([n, semi]) => {
+    const nat = isNatural(semi);
+    const active = activeNote === semi;
+    return `<button class="note-chip${nat ? ' natural' : ''}${active ? ' active' : ''}" data-semi="${semi}">${n}</button>`;
+  }).join('');
+
+  picker.querySelectorAll('.note-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const semi = parseInt(btn.dataset.semi);
+      activeNote = (activeNote === semi) ? null : semi;
+      refreshDots();
+      buildPicker();
+    });
+  });
+}
+
+// ── ACCIDENTAL TOGGLE ───────────────────────────────────────────
 document.getElementById('btnSharps').addEventListener('click', () => {
   useFlats = false;
   document.getElementById('btnSharps').classList.add('active');
   document.getElementById('btnFlats').classList.remove('active');
-  updateNoteNames();
-  updateHighlight();
+  refreshNoteText();
 });
-
 document.getElementById('btnFlats').addEventListener('click', () => {
   useFlats = true;
   document.getElementById('btnFlats').classList.add('active');
   document.getElementById('btnSharps').classList.remove('active');
-  updateNoteNames();
-  updateHighlight();
+  refreshNoteText();
 });
 
-// ─── INIT ────────────────────────────────────────────────────────
-buildFretboard();
+// ── INIT ────────────────────────────────────────────────────────
+buildNeck();
 buildPicker();
 </script>
 </body>
